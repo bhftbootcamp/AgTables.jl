@@ -1,0 +1,40 @@
+airline_name,flight_number,destination,status
+Hawaiian Airlines,1612,"San Bernardino, CA",In Air
+Avianca Costa Rica,653,Guatemala City,Canceled
+Avianca,653,Guatemala City,In Air
+Cargolux Airlines,5801,Luxembourg,Canceled
+Avianca,65,Cartagena,Scheduled
+Caribbean Airlines Limited,527,Georgetown,Scheduled
+JetBlue Airways,209,Santo Domingo,Scheduled
+JetBlue Airways,2137,Santiago,Scheduled
+Qatar Airways,4045,Santo Domingo,Scheduled
+Qatar Airways,4127,Santiago,Scheduled
+American Airlines,1017,"Miami, FL",Scheduled
+British Airways,5203,"Miami, FL",Scheduled
+Cathay Pacific,7529,"Miami, FL",Scheduled
+Malaysia Airlines,9412,"Miami, FL",Scheduled
+Qatar Airways,9371,"Miami, FL",Scheduled
+American Airlines,892,"Charlotte, NC",Scheduled
+Finnair,4184,"Charlotte, NC",Scheduled
+Qatar Airways,9358,"Charlotte, NC",Scheduled
+Royal Air Maroc,5047,"Charlotte, NC",Scheduled
+AeroMexico,5520,"Atlanta, GA",Scheduled
+AeroMexico,4163,"Boston, MA",Scheduled
+Air Tahiti Nui,1307,"Los Angeles, CA",Scheduled
+American Airlines,76,"San Francisco, CA",Scheduled
+American Airlines,171,"Los Angeles, CA",Scheduled
+British Airways,4713,"San Francisco, CA",Scheduled
+British Airways,1905,"Los Angeles, CA",Scheduled
+Delta Air Lines,1334,"Atlanta, GA",Scheduled
+Delta Air Lines,5749,"Boston, MA",Scheduled
+El Al Israel Airlines,4149,"Atlanta, GA",Scheduled
+El Al Israel Airlines,4200,"Boston, MA",Scheduled
+Icelandair,7881,"Los Angeles, CA",Scheduled
+Icelandair,7823,"Miami, FL",Scheduled
+Japan Airlines,7575,"San Francisco, CA",Scheduled
+JetBlue Airways,123,"Los Angeles, CA",Scheduled
+JetBlue Airways,189,"San Diego, CA",Scheduled
+JetBlue Airways,869,Punta Cana,Scheduled
+JetBlue Airways,2293,"Miami, FL",Scheduled
+KLM Royal Dutch Airlines,5073,"Atlanta, GA",Scheduled
+KLM Royal Dutch Airlines,5213,"Boston, MA",Scheduled

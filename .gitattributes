@@ -1,0 +1,5 @@
+frontend/dist/* linguist-generated=true
+frontend/public/* linguist-generated=true
+frontend/node_modules/* linguist-generated=true
+frontend/package-lock.json linguist-generated=true
+assets/* linguist-generated=true
