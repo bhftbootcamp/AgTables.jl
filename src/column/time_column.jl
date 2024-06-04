@@ -12,6 +12,7 @@ Type defining a time column and its display settings.
 | `header_name::String` | `field_name` | Override `field_name` as default with custom value. |
 | `visible::Bool` | `true` | Column visibility. |
 | `filter::Bool` | `false` | Enables a filter for column values. |
+| `initial_sort::AG_SORT_TYPES` | `AG_NULL_SORT` (`AG_ASC`, `AG_DESC`) | Initial sorting in the column. |
 | `date_formatter::AG_DATE_FORMATTER` | `AG_DATE_TIME` (`AG_TIME`, `AG_DATE`) | Specify time display format. |
 | `str_format::String` | `"%s"` | String template for formatting values. The `%s` is replaced with the value. |
 | `width::Integer` | `nothing` | Column width. |
@@ -19,8 +20,7 @@ Type defining a time column and its display settings.
 | `rect_background::String` | `"#fff"` | Background color of the rectangle. |
 | `color::String` | `"#000"` | Text color. |
 | `text_align::AG_TEXTALIGN_TYPES` | `AG_CENTER` (`AG_LEFT`, `AG_RIGHT`) | Text alignment. |
-| `equals::Vector` | `Int64[]` | The values that are highlighted in color in the cell. |
-| `equals_color::String` | `"#ca3c32"` | The color used to highlight values that match the `equals`. |
+| `equals::Dict{Union{Real,TimeType}, String}` | `Dict{Real,String}()` | A dictionary of colors by their values. |
 | `threshold::AGThreshold` | `nothing` | Settings for highlighting cells based on a threshold value. |
 """
 struct AgTimeColumnDef <: AbstractColumnDef
@@ -28,6 +28,7 @@ struct AgTimeColumnDef <: AbstractColumnDef
     header_name::String
     visible::Bool
     filter::AG_FILTER_TYPES
+    initial_sort::AG_SORT_TYPES
     formatter_type::String
     formatter::Union{AG_DATE_FORMATER,Nothing}
     str_format::String
@@ -36,8 +37,7 @@ struct AgTimeColumnDef <: AbstractColumnDef
     rect_background::String
     color::String
     text_align::AG_TEXTALIGN_TYPES
-    equals::AbstractVector{<:Union{Real,TimeType}}
-    equals_color::String
+    equals::AbstractDict{T,String} where {T<:Union{Real,TimeType}}
     threshold::Union{AGThreshold,Nothing}
 
     function AgTimeColumnDef(;
@@ -45,6 +45,7 @@ struct AgTimeColumnDef <: AbstractColumnDef
         header_name::String = field_name,
         visible::Bool = true,
         filter::Bool = false,
+        initial_sort::AG_SORT_TYPES = AG_NULL_SORT,
         date_formatter::Union{AG_DATE_FORMATER,Nothing} = AG_DATE_TIME,
         str_format::String = "%s",
         width::Union{Integer,Nothing} = nothing,
@@ -52,8 +53,7 @@ struct AgTimeColumnDef <: AbstractColumnDef
         rect_background::AbstractString = "#fff",
         color::AbstractString = "#000",
         text_align::AG_TEXTALIGN_TYPES = AG_RIGHT,
-        equals::AbstractVector{<:Union{TimeType,Real}} = Int64[],
-        equals_color::AbstractString = "red",
+        equals::AbstractDict{<:Union{Real,TimeType},String} = Dict{Real,String}(),
         threshold::Union{AGThreshold,Nothing} = nothing,
     )
         return new(
@@ -61,6 +61,7 @@ struct AgTimeColumnDef <: AbstractColumnDef
             header_name,
             visible,
             filter ? AG_DATE_FILTER : AG_NULL_FILTER,
+            initial_sort,
             date_formatter !== nothing ? "date" : "",
             date_formatter,
             str_format,
@@ -69,8 +70,7 @@ struct AgTimeColumnDef <: AbstractColumnDef
             rect_background !== "#fff" ? rect_background : cell_background,
             color,
             text_align,
-            datetime2epoch.(equals),
-            equals_color,
+            Dict(datetime2epoch(k) => v for (k, v) in equals),
             threshold,
         )
     end

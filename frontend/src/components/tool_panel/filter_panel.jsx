@@ -10,7 +10,7 @@ const FilterPanel = ({ api, filters, uuidKey }) => {
 
     useEffect(() => {
         if (ref) {
-            const observer = new ResizeObserver(() => localStorage.setItem(uuidKey, ref.current.clientWidth));
+            const observer = new ResizeObserver(() => localStorage.setItem(uuidKey + "width", ref.current.clientWidth));
             observer.observe(ref.current);
 
             return () => observer.disconnect();

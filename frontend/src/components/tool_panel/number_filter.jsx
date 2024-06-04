@@ -19,18 +19,36 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
 
     const [max, min, step] = useMemo(() => {
         let values = [];
+        let displayedValues = [];
         api.forEachNode((node) => {
-            values.push(node.data[filter])
+            values.push(node.data[filter]);
+            if (node.displayed) displayedValues.push(node.data[filter]);
         });
 
         let max = Math.max(...values);
         let min = Math.min(...values);
+        let maxV = Math.max(...displayedValues);
+        let minV = Math.min(...displayedValues);
 
-        if (isNaN(max)) max = 0;
-        if (isNaN(min)) min = 0;
+        if (isNaN(max)) {
+            max = 0;
+            maxV = 0
+        }
+        if (isNaN(min)) {
+            min = 0;
+            minV = 0;
+        }
 
-        setmaxValue(max);
-        setminValue(min);
+        setmaxValue(maxV);
+        setminValue(minV);
+
+        setTimeout(() => {
+            let percent1 = ((minV - min) / (max - min)) * 100;
+            let percent2 = ((maxV - min) / (max - min)) * 100;
+
+            let slider = document.getElementById(`slider_track_${filter}`)
+            slider.style.background = `linear-gradient(to right, #e5e5e5 ${percent1}% , #666666 ${percent1}% , #666666 ${percent2}%, #e5e5e5 ${percent2}%)`;
+        }, 10);
 
         return [max, min, calculateStep(min, max)];
     }, [api]);
@@ -215,6 +233,7 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
                     </div>
                     <div className='container'>
                         <div
+                            id={`slider_track_${filter}`}
                             className='slider_track'
                             style={{ background: "#666666" }}
                             ref={ref}

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import FilterPanel from "./tool_panel/filter_panel.jsx";
 import * as util from 'util';
@@ -10,7 +10,8 @@ import { displayDateString, displayDateTimeString, displayTimeString, extractTim
 
 const AgGrid = ({ table }) => {
     const [filters, setFilters] = useState(null);
-    const initialWidth = localStorage.getItem(table.uuidKey);
+    const [initialState, setInitialState] = useState(JSON.parse(localStorage.getItem(table.uuidKey)));
+    const initialWidth = localStorage.getItem(table.uuidKey + "width");
 
     const columnDefs = useMemo(() => {
         let coldef = [];
@@ -79,9 +80,9 @@ const AgGrid = ({ table }) => {
                 if (column.threshold)
                     style.color = params.value >= column.threshold.value ? column.threshold.colorUp : column.threshold.colorDown;
 
-                if (column.equals.includes(params.value)) {
-                    style.color = column.equalsColor;
-                }
+                Object.entries(column.equals).map(([value, color]) => {
+                    if (params.value == value) style.color = color;
+                })
 
                 return style;
             };
@@ -90,6 +91,8 @@ const AgGrid = ({ table }) => {
             if (table.columnFilter || isFilters) setFilters(colsFilters);
             if (column.width) cols.width = column.width;
             else cols.flex = 1;
+
+            cols.initialSort = column.initialSort;
             cols.autoHeight = true;
             coldef.push(cols);
         });
@@ -126,7 +129,7 @@ const AgGrid = ({ table }) => {
                             filters: filters,
                             uuidKey: table.uuidKey
                         },
-                        width: parseInt(initialWidth),
+                        width: parseInt(initialWidth) || 223,
                     },
                 ],
                 defaultToolPanel: 'customStats',
@@ -168,6 +171,50 @@ const AgGrid = ({ table }) => {
         return formatter.format(Number(params.value));
     };
 
+    const onStateUpdated = useCallback((params) => {
+        console.log('State updated', params.state);
+        setInitialState(params.state);
+        localStorage.setItem(table.uuidKey, JSON.stringify(params.state));
+    }, []);
+
+    const onFirstDataRendered = useCallback((params) => {
+        if (initialState) return;
+
+        table.columnDefs.map((column) => {
+            if (column.include && column.include.length) {
+                params.api.setColumnFilterModel(column.fieldName, {
+                    filterType: 'text',
+                    type: 'set',
+                    values: column.include.filter(value => !column.exclude.includes(value)),
+                }).then(() => {
+                    params.api.onFilterChanged();
+                });
+            } else if (column.exclude && column.exclude.length) {
+                let uniqueValues = {};
+                params.api.forEachNode(elem => {
+                    const value = elem.data[column.fieldName];
+                    if (!(value in uniqueValues)) {
+                        uniqueValues[value] = elem.displayed;
+                    } else {
+                        if (elem.displayed) uniqueValues[value] = true;
+                    }
+                });
+                const result = Object.entries(uniqueValues).map(([value, checked]) => {
+                    if (checked) return value;
+                });
+                const filteredValues = result.filter(value => !column.exclude.includes(value));
+            
+                params.api.setColumnFilterModel(column.fieldName, {
+                    filterType: 'text',
+                    type: 'set',
+                    values: filteredValues,
+                }).then(() => {
+                    params.api.onFilterChanged();
+                });
+            }
+        })
+    }, []);
+
     return (
         <div className="ag-theme-quartz aggrid">
             <AgGridReact
@@ -175,6 +222,12 @@ const AgGrid = ({ table }) => {
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}
                 sideBar={sideBar}
+                initialState={initialState}
+                headerHeight={table.headerHeight}
+                rowHeight={table.rowHeight}
+                multiSortKey={"ctrl"}
+                onStateUpdated={onStateUpdated}
+                onFirstDataRendered={onFirstDataRendered}
             />
         </div>
     );

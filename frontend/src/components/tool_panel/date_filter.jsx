@@ -10,42 +10,61 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
 
     const [max, min] = useMemo(() => {
         let values = [];
+        let displayedValues = [];
         api.forEachNode((node) => {
-            formatter == "time" ? values.push(extractTimeInMilliseconds(node.data[filter])) : values.push(node.data[filter])
+            formatter == "time" ? values.push(extractTimeInMilliseconds(node.data[filter])) : values.push(node.data[filter]);
+            if (node.displayed)
+                formatter == "time" ? displayedValues.push(extractTimeInMilliseconds(node.data[filter])) : displayedValues.push(node.data[filter]);
         });
 
         let max = Math.max(...values);
         let min = Math.min(...values);
+        let minV = Math.min(...displayedValues);
+        let maxV = Math.max(...displayedValues);
 
-        if (isNaN(max)) max = 0;
-        if (isNaN(min)) min = 0;
+        if (isNaN(max)) {
+            max = 0;
+            maxV = 0;
+        }
+        if (isNaN(min)) {
+            min = 0;
+            minV = 0;
+        }
 
         switch (formatter) {
             case "datetime":
-                setInputMin(displayDateTimeString(min));
-                setInputMax(displayDateTimeString(max));
-                setmaxValue(max);
-                setminValue(min);
+                setInputMin(displayDateTimeString(minV));
+                setInputMax(displayDateTimeString(maxV));
+                setmaxValue(maxV);
+                setminValue(minV);
                 break
             case "date":
-                setInputMin(displayDateString(min));
-                setInputMax(displayDateString(max));
-                setmaxValue(max);
-                setminValue(min);
+                setInputMin(displayDateString(minV));
+                setInputMax(displayDateString(maxV));
+                setmaxValue(maxV);
+                setminValue(minV);
                 break
             case "time":
-                setInputMin(displayTimeString(min));
-                setInputMax(displayTimeString(max));
-                setmaxValue(extractTimeInMilliseconds(max));
-                setminValue(extractTimeInMilliseconds(min));
+                setInputMin(displayTimeString(minV));
+                setInputMax(displayTimeString(maxV));
+                setmaxValue(extractTimeInMilliseconds(maxV));
+                setminValue(extractTimeInMilliseconds(minV));
                 break
             default:
-                setInputMin(min);
-                setInputMax(max);
-                setmaxValue(max);
-                setminValue(min);
+                setInputMin(minV);
+                setInputMax(maxV);
+                setmaxValue(maxV);
+                setminValue(minV);
                 break
         }
+
+        setTimeout(() => {
+            let percent1 = ((minV - min) / (max - min)) * 100;
+            let percent2 = ((maxV - min) / (max - min)) * 100;
+
+            let slider = document.getElementById(`slider_track_${filter}`)
+            slider.style.background = `linear-gradient(to right, #e5e5e5 ${percent1}% , #666666 ${percent1}% , #666666 ${percent2}%, #e5e5e5 ${percent2}%)`;
+        }, 10);
         return [max, min];
     }, [api]);
 
@@ -233,6 +252,7 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
                     </div>
                     <div className='container'>
                         <div
+                            id={`slider_track_${filter}`}
                             className='slider_track'
                             style={{ background: "#666666" }}
                             ref={ref}

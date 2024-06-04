@@ -16,7 +16,8 @@ export AgNumberColumnDef,
 
 export AG_FILTER_TYPES,
     AG_STYLE_TYPES,
-    AG_TEXTALIGN_TYPES
+    AG_TEXTALIGN_TYPES,
+    AG_SORT_TYPES
 
 export AG_TEXT_FILTER,
     AG_NUMBER_FILTER,
@@ -34,6 +35,10 @@ export AG_CURRENCY,
 export AG_LEFT,
     AG_CENTER,
     AG_RIGHT
+
+export AG_ASC,
+    AG_DESC,
+    AG_NULL_SORT
 
 using Serde
 using OrderedCollections
@@ -62,6 +67,8 @@ Base.@kwdef struct AGTable
     name::String
     row_data::Vector{Dict{String,Any}}
     resize::Bool
+    header_height::Integer
+    row_height::Integer
     column_filter::Bool
     column_defs::Vector{<:AbstractColumnDef}
     uuid_key::String
@@ -86,6 +93,8 @@ With `column_defs` you can configure parameters and formatting of [`columns`](@r
 |:-----------|:-------------------------|:------------|
 | `name::String` |` "AgTable ❤️ Julia"` | Table name and browser tab title. |
 | `resize::Bool` | `true` | Column width flexibility. |
+| `header_height::Integer` | `40` | Header height in px. |
+| `row_height::Integer` | `39` | Row height in px. |
 | `column_filter::Bool` | `false` | If a filter for column names should be used. |
 
 See also: [`ag_show`](@ref), [`ag_save`](@ref).
@@ -95,6 +104,8 @@ function ag_table(
     column_defs::AbstractColumnDef...;
     name::AbstractString = "AgTable ❤️ Julia",
     resize::Bool = true,
+    header_height::Integer = 40,
+    row_height::Integer = 39,
     column_filter::Bool = false,
 )::AGTable where {T}
     new_column_defs, new_row_data = format_row_data(column_defs, row_data)
@@ -102,6 +113,8 @@ function ag_table(
         name = name,
         row_data = new_row_data,
         resize = resize,
+        header_height = header_height,
+        row_height = row_height,
         column_filter = column_filter,
         column_defs = new_column_defs,
         uuid_key = string(UUIDs.uuid4()),

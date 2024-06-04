@@ -9,7 +9,8 @@ export AgStringColumnDef,
 
 export AG_FILTER_TYPES,
     AG_STYLE_TYPES,
-    AG_TEXTALIGN_TYPES
+    AG_TEXTALIGN_TYPES,
+    AG_SORT_TYPES
 
 export AG_TEXT_FILTER,
     AG_NUMBER_FILTER,
@@ -27,6 +28,10 @@ export AG_CURRENCY,
 export AG_LEFT,
     AG_CENTER,
     AG_RIGHT
+
+export AG_ASC,
+    AG_DESC,
+    AG_NULL_SORT
 
 using Serde
 using Dates
@@ -61,6 +66,12 @@ end
     AG_PERCENT = 2
 end
 
+@enum AG_SORT_TYPES begin
+    AG_ASC = 0
+    AG_DESC = 1
+    AG_NULL_SORT = 2
+end
+
 function Serde.SerJson.ser_type(::Type{<:AbstractColumnDef}, x::AG_FILTER_TYPES)
     x == AG_TEXT_FILTER && return "text"
     x == AG_NUMBER_FILTER && return "number"
@@ -84,6 +95,12 @@ function Serde.SerJson.ser_type(::Type{<:AbstractColumnDef}, x::AG_STYLE_TYPES)
     x == AG_CURRENCY && return "currency"
     x == AG_DECIMAL && return "decimal"
     return "percent"
+end
+
+function Serde.SerJson.ser_type(::Type{<:AbstractColumnDef}, x::AG_SORT_TYPES)
+    x == AG_ASC && return "asc"
+    x == AG_DESC && return "desc"
+    return nothing
 end
 
 """
