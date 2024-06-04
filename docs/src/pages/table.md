@@ -117,7 +117,7 @@ table = ag_table(
         header_name = "Exchange Rate",
         filter = true,
         formatter = AGFormatter(style = AG_PERCENT),
-        threshold = AGThreshold(0.0, color_down = "#8ac926", color_up = "#ff595e"),
+        threshold = AGThreshold(0.0, color_down = "#ff595e", color_up = "#8ac926"),
     ),
     AgNumberColumnDef(
         field_name = "market_cap",

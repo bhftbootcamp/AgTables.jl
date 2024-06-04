@@ -8,13 +8,18 @@
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://bhftbootcamp.github.io/AgTable.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://bhftbootcamp.github.io/AgTable.jl/dev/)
-[![Build Status](https://github.com/bhftbootcamp/AgTable.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/bhftbootcamp/AgTable.jl/actions/workflows/CI.yml?query=branch%3Amaster)
+[![Build Status](https://github.com/bhftbootcamp/AgTable.jl/actions/workflows/Coverage.yml/badge.svg?branch=master)](https://github.com/bhftbootcamp/AgTable.jl/actions/workflows/Coverage.yml?query=branch%3Amaster)
 [![Coverage](https://codecov.io/gh/bhftbootcamp/AgTable.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/bhftbootcamp/AgTable.jl)
-[![Registry](https://img.shields.io/badge/registry-General-4063d8)](https://github.com/JuliaRegistries/General)
+[![Registry](https://img.shields.io/badge/registry-Green-green)](https://github.com/bhftbootcamp/Green)
 
 AgTable is an easy-to-use wrapper for the [AG Grid](https://www.ag-grid.com/) library, designed for quick visualization and easy sharing of tabular data.
 
 ## Installation
+If you haven't installed our [local registry](https://github.com/bhftbootcamp/Green) yet, do that first:
+```
+] registry add https://github.com/bhftbootcamp/Green.git
+```
+
 To install AgTable, simply use the Julia package manager:
 
 ```julia
