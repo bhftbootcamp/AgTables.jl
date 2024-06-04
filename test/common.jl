@@ -29,6 +29,5 @@
     @testset "Case №1: Sort" begin
         @test Serde.SerJson.ser_type(AbstractColumnDef, AG_ASC) == "asc"
         @test Serde.SerJson.ser_type(AbstractColumnDef, AG_DESC) == "desc"
-        @test Serde.SerJson.ser_type(AbstractColumnDef, AG_NULL_SORT) |> isnothing
     end
 end

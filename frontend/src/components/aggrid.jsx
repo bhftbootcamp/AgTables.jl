@@ -80,7 +80,7 @@ const AgGrid = ({ table }) => {
                 if (column.threshold)
                     style.color = params.value >= column.threshold.value ? column.threshold.colorUp : column.threshold.colorDown;
 
-                Object.entries(column.equals).map(([value, color]) => {
+                Object.entries(column.colorMap).map(([value, color]) => {
                     if (params.value == value) style.color = color;
                 })
 
@@ -92,7 +92,7 @@ const AgGrid = ({ table }) => {
             if (column.width) cols.width = column.width;
             else cols.flex = 1;
 
-            cols.initialSort = column.initialSort;
+            cols.initialSort = column.defaultSort;
             cols.autoHeight = true;
             coldef.push(cols);
         });
@@ -181,15 +181,15 @@ const AgGrid = ({ table }) => {
         if (initialState) return;
 
         table.columnDefs.map((column) => {
-            if (column.include && column.include.length) {
+            if (column.filterInclude && column.filterInclude.length) {
                 params.api.setColumnFilterModel(column.fieldName, {
                     filterType: 'text',
                     type: 'set',
-                    values: column.include.filter(value => !column.exclude.includes(value)),
+                    values: column.filterInclude.filter(value => !column.filterExclude.includes(value)),
                 }).then(() => {
                     params.api.onFilterChanged();
                 });
-            } else if (column.exclude && column.exclude.length) {
+            } else if (column.filterExclude && column.filterExclude.length) {
                 let uniqueValues = {};
                 params.api.forEachNode(elem => {
                     const value = elem.data[column.fieldName];
@@ -202,8 +202,8 @@ const AgGrid = ({ table }) => {
                 const result = Object.entries(uniqueValues).map(([value, checked]) => {
                     if (checked) return value;
                 });
-                const filteredValues = result.filter(value => !column.exclude.includes(value));
-            
+                const filteredValues = result.filter(value => !column.filterExclude.includes(value));
+
                 params.api.setColumnFilterModel(column.fieldName, {
                     filterType: 'text',
                     type: 'set',

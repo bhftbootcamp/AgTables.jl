@@ -54,7 +54,7 @@ Type defining a numeric column and its display settings.
 | `header_name::String` | `field_name` | Override `field_name` as default with custom value. |
 | `visible::Bool` | `true` | Column visibility. |
 | `filter::Bool` | `false` | Enables a filter for column values. |
-| `initial_sort::AG_SORT_TYPES` | `AG_NULL_SORT` (`AG_ASC`, `AG_DESC`) | Initial sorting in the column. |
+| `default_sort::AG_SORT_MODES` | `nothing` (`AG_ASC`, `AG_DESC`) | Initial sorting in the column. |
 | `formatter::AGFormatter` | `nothing` | Formatting of the numbers. |
 | `str_format::String` | `"%s"` | String template for formatting values. The `%s` is replaced with the value. |
 | `width::Integer` | `nothing` | Column width. |
@@ -62,7 +62,7 @@ Type defining a numeric column and its display settings.
 | `rect_background::String` | `"#fff"` | Background color of the rectangle. |
 | `color::String` | `"#000"` | Text color. |
 | `text_align::AG_TEXTALIGN_TYPES` | `AG_CENTER` (`AG_LEFT`, `AG_RIGHT`) | Text alignment. |
-| `equals::Dict{Number, String}` | `Dict{Number,String}()` | A dictionary of colors by their values. |
+| `color_map::Dict{Number,String}` | `Dict{Number,String}()` | A dictionary of colors by their values. |
 | `threshold::AGThreshold` | `nothing` | Settings for highlighting cells based on a threshold value. |
 """
 struct AgNumberColumnDef <: AbstractColumnDef
@@ -70,7 +70,7 @@ struct AgNumberColumnDef <: AbstractColumnDef
     header_name::String
     visible::Bool
     filter::AG_FILTER_TYPES
-    initial_sort::AG_SORT_TYPES
+    default_sort::Union{AG_SORT_MODES,Nothing}
     formatter_type::String
     formatter::Union{AGFormatter,Nothing}
     str_format::String
@@ -79,7 +79,7 @@ struct AgNumberColumnDef <: AbstractColumnDef
     rect_background::String
     color::String
     text_align::AG_TEXTALIGN_TYPES
-    equals::AbstractDict{T,String} where {T<:Number}
+    color_map::AbstractDict{T,String} where {T<:Number}
     threshold::Union{AGThreshold,Nothing}
 
     function AgNumberColumnDef(;
@@ -87,7 +87,7 @@ struct AgNumberColumnDef <: AbstractColumnDef
         header_name::String = field_name,
         visible::Bool = true,
         filter::Bool = false,
-        initial_sort::AG_SORT_TYPES = AG_NULL_SORT,
+        default_sort::Union{AG_SORT_MODES,Nothing} = nothing,
         formatter::Union{AGFormatter,Nothing} = nothing,
         str_format::String = "%s",
         width::Union{Integer,Nothing} = nothing,
@@ -95,7 +95,7 @@ struct AgNumberColumnDef <: AbstractColumnDef
         rect_background::AbstractString = "#fff",
         color::AbstractString = "#000",
         text_align::AG_TEXTALIGN_TYPES = AG_RIGHT,
-        equals::AbstractDict{<:Number,String} = Dict{Number,String}(),
+        color_map::AbstractDict{<:Number,String} = Dict{Number,String}(),
         threshold::Union{AGThreshold,Nothing} = nothing,
     )
         return new(
@@ -103,7 +103,7 @@ struct AgNumberColumnDef <: AbstractColumnDef
             header_name,
             visible,
             filter ? AG_NUMBER_FILTER : AG_NULL_FILTER,
-            initial_sort,
+            default_sort,
             formatter !== nothing ? "number" : "",
             formatter,
             str_format,
@@ -112,7 +112,7 @@ struct AgNumberColumnDef <: AbstractColumnDef
             rect_background !== "#fff" ? rect_background : cell_background,
             color,
             text_align,
-            equals,
+            color_map,
             threshold,
         )
     end

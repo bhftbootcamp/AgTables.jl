@@ -17,7 +17,7 @@ export AgNumberColumnDef,
 export AG_FILTER_TYPES,
     AG_STYLE_TYPES,
     AG_TEXTALIGN_TYPES,
-    AG_SORT_TYPES
+    AG_SORT_MODES
 
 export AG_TEXT_FILTER,
     AG_NUMBER_FILTER,
@@ -37,8 +37,7 @@ export AG_LEFT,
     AG_RIGHT
 
 export AG_ASC,
-    AG_DESC,
-    AG_NULL_SORT
+    AG_DESC
 
 using Serde
 using OrderedCollections
