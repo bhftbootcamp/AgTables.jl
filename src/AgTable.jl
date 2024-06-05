@@ -66,6 +66,7 @@ Base.@kwdef struct AGTable
     name::String
     row_data::Vector{Dict{String,Any}}
     resize::Bool
+    flex::Bool
     header_height::Integer
     row_height::Integer
     column_filter::Bool
@@ -92,6 +93,7 @@ With `column_defs` you can configure parameters and formatting of [`columns`](@r
 |:-----------|:-------------------------|:------------|
 | `name::String` |` "AgTable ❤️ Julia"` | Table name and browser tab title. |
 | `resize::Bool` | `true` | Column width flexibility. |
+| `flex::Bool` | `true` | Stretching columns to fit the available width. |
 | `header_height::Integer` | `40` | Header height in px. |
 | `row_height::Integer` | `39` | Row height in px. |
 | `column_filter::Bool` | `false` | If a filter for column names should be used. |
@@ -103,6 +105,7 @@ function ag_table(
     column_defs::AbstractColumnDef...;
     name::AbstractString = "AgTable ❤️ Julia",
     resize::Bool = true,
+    flex::Bool = true,
     header_height::Integer = 40,
     row_height::Integer = 39,
     column_filter::Bool = false,
@@ -112,6 +115,7 @@ function ag_table(
         name = name,
         row_data = new_row_data,
         resize = resize,
+        flex = flex,
         header_height = header_height,
         row_height = row_height,
         column_filter = column_filter,

@@ -90,7 +90,7 @@ const AgGrid = ({ table }) => {
             if (table.columnFilter) colsFilters.cols = true;
             if (table.columnFilter || isFilters) setFilters(colsFilters);
             if (column.width) cols.width = column.width;
-            else cols.flex = 1;
+            else if (table.flex) cols.flex = 1;
 
             cols.initialSort = column.defaultSort;
             cols.autoHeight = true;
@@ -226,6 +226,9 @@ const AgGrid = ({ table }) => {
                 headerHeight={table.headerHeight}
                 rowHeight={table.rowHeight}
                 multiSortKey={"ctrl"}
+                // autoSizeStrategy={{
+                //     type: 'fitCellContents'
+                // }}
                 onStateUpdated={onStateUpdated}
                 onFirstDataRendered={onFirstDataRendered}
             />
