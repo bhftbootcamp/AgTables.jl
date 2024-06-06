@@ -7,22 +7,23 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
     const [all, setAll] = useState(true);
 
     useEffect(() => {
+        if (refresh && refresh == filter) return;
+        
         let uniqueValues = {};
         let isAll = true;
+
         api.forEachNode(elem => {
             const value = elem.data[filter];
             if (!(value in uniqueValues)) {
                 uniqueValues[value] = elem.displayed;
-            } else {
-                if (elem.displayed) uniqueValues[value] = true;
+            } else if (elem.displayed) {
+                uniqueValues[value] = true;
             }
         });
+
         const result = Object.entries(uniqueValues).map(([value, checked]) => {
             if (!checked) isAll = false;
-            return {
-                value,
-                checked
-            }
+            return { value, checked };
         });
 
         result.sort((a, b) => a.value.localeCompare(b.value));
@@ -32,45 +33,35 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
         setAll(isAll);
     }, [api, refresh]);
 
-    const clickCheck = (e) => {
-        let isAll = true;
-        const updatedCheckedState = nodes.map((item) => {
+    const handleCheck = (e) => {
+        const updatedNodes = nodes.map((item) => {
             if (String(item.value) === e.target.value) {
-                if (item.checked) isAll = false;
-                return {
-                    ...item,
-                    checked: !item.checked
-                };
+                item.checked = !item.checked;
             }
-            if (!item.checked) isAll = false;
             return item
         });
 
-        setAll(isAll);
-        setNodes(updatedCheckedState);
-        setFilteredNodes(updatedCheckedState);
-        if (searchValue) inputSearch(searchValue, updatedCheckedState);
+        const isAllChecked = updatedNodes.every(item => item.checked);
+
+        setAll(isAllChecked);
+        setNodes(updatedNodes);
+        setFilteredNodes(updatedNodes);
+        if (searchValue) filterNodes(searchValue, updatedNodes);
     };
 
-    const clickAll = (e) => {
-        let updatedCheckedState = [];
-        updatedCheckedState = nodes.map((item) => {
-            return {
-                ...item,
-                checked: e.target.checked
-            }
-        })
+    const handleCheckAll = (e) => {
+        let updatedNodes = nodes.map((item) => ({
+            ...item,
+            checked: e.target.checked
+        }));
 
-        setAll(state => !state);
-        setFilteredNodes(updatedCheckedState);
-        setNodes(updatedCheckedState);
+        setAll(e.target.checked);
+        setFilteredNodes(updatedNodes);
+        setNodes(updatedNodes);
     }
 
-    const apply = (event) => {
-        let checkedValues = []
-        nodes.forEach((item) => {
-            if (item.checked) checkedValues.push(String(item.value))
-        });
+    const updateFilter = () => {
+        let checkedValues = nodes.filter(item => item.checked).map(item => String(item.value));
 
         api.setColumnFilterModel(filter, {
             filterType: 'text',
@@ -78,54 +69,39 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
             values: checkedValues
         }).then(() => {
             api.onFilterChanged();
-        }).then(() => {
-            setRefresh(state => !state);
+            setRefresh(filter);
         });
+
         setSearchValue("");
-    }
+    };
 
-    const reset = (event) => {
-        let updatedCheckedState = nodes.map((item) => {
-            return {
-                ...item,
-                checked: true
-            }
-        })
-
-        let checkedValues = []
-        nodes.forEach((item) => {
-            checkedValues.push(String(item.value))
-        });
+    const resetFilter = () => {
+        let updatedNodes = nodes.map((item) => ({
+            ...item,
+            checked: true
+        }));
 
         api.setColumnFilterModel(filter, null).then(() => {
             api.onFilterChanged();
-            setRefresh(state => !state);
+            setRefresh(filter);
         });
 
         setAll(true);
-        setFilteredNodes(updatedCheckedState);
-        setNodes(updatedCheckedState);
-        event.preventDefault();
+        setFilteredNodes(updatedNodes);
+        setNodes(updatedNodes);
     }
 
-    const inputSearch = (value, nodes_ = nodes) => {
+    const filterNodes = (value, nodesList = nodes) => {
         setSearchValue(value);
+
         if (value.len == 0) {
             return;
         }
-        const searchValue = value.toLowerCase();
-        let regex = new RegExp(searchValue, 'g');
 
-        let searchedArray = new Array();
+        const regex = new RegExp(value.toLowerCase(), 'g');
+        const filtered = nodesList.filter(node => String(node.value).toLowerCase().match(regex));
 
-        for (let node of nodes_) {
-            const nodeValue = String(node.value);
-            if (!!nodeValue.toLowerCase().match(regex)) {
-                searchedArray.push(node);
-            }
-        }
-
-        setFilteredNodes(searchedArray);
+        setFilteredNodes(filtered);
     }
 
     return (
@@ -137,7 +113,7 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
                         className='searcher'
                         placeholder={`Search for ${header}...`}
                         value={searchValue}
-                        onInput={e => inputSearch(e.target.value)}
+                        onInput={e => filterNodes(e.target.value)}
                     />
                     <div className='column_filter_items'>
                         <div className='column_filter_item'>
@@ -146,37 +122,31 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
                                 className='input_cols_filter'
                                 type='checkbox'
                                 value='all'
-                                onChange={clickAll}
+                                onChange={handleCheckAll}
                                 checked={all}
                             />
-                            <label
-                                htmlFor={`all${filter}`}
-                                onChange={clickAll}
-                                className='input_column_name'
-                            >
-                                (All)
-                            </label>
+                            <label htmlFor={`all${filter}`} onChange={handleCheckAll} className='input_column_name'>(All)</label>
                         </div>
-                        {
-                            filteredNodes.map((node, index) => {
-                                return <div className='column_filter_item' key={index}>
-                                    <input
-                                        id={`checkbox${filter}${index}`}
-                                        className='input_cols_filter'
-                                        onChange={clickCheck}
-                                        type='checkbox'
-                                        value={node.value}
-                                        checked={node.checked}
-                                    />
-                                    <label htmlFor={`checkbox${filter}${index}`} className='input_column_name'><div className="label_cell" dangerouslySetInnerHTML={{ __html: node.value }}></div></label>
-                                </div>
-                            })
-                        }
+                        {filteredNodes.map((node, index) => (
+                            <div className='column_filter_item' key={index}>
+                                <input
+                                    id={`checkbox${filter}${index}`}
+                                    className='input_cols_filter'
+                                    onChange={handleCheck}
+                                    type='checkbox'
+                                    value={node.value}
+                                    checked={node.checked}
+                                />
+                                <label htmlFor={`checkbox${filter}${index}`} className='input_column_name'>
+                                    <div className="label_cell" dangerouslySetInnerHTML={{ __html: node.value }}></div>
+                                </label>
+                            </div>
+                        ))}
                     </div>
                 </div>
                 <div className='apply_button_wrapper'>
-                    <button className='apply_button' onClick={reset}>Reset</button>
-                    <button className='apply_button' onClick={apply}>Apply</button>
+                    <button className='apply_button' onClick={resetFilter}>Reset</button>
+                    <button className='apply_button' onClick={updateFilter}>Apply</button>
                 </div>
             </div>
         </div>

@@ -13,91 +13,69 @@ const AgGrid = ({ table }) => {
     const [initialState, setInitialState] = useState(JSON.parse(localStorage.getItem(table.uuidKey)));
     const initialWidth = localStorage.getItem(table.uuidKey + "width");
 
+    const getCellRenderer = (column) => (params) => {
+        let value = params.value;
+        if (column.formatterType === "number") {
+            value = formatNumber(value, column.formatter);
+        } else if (column.formatterType === "date") {
+            value = formatDate(value, column.formatter);
+        }
+        return <div className="cell" style={{ backgroundColor: column.rectBackground }} dangerouslySetInnerHTML={{ __html: util.format(column.strFormat, value) }} />;
+    };
+
+    const getCellStyle = (params, column) => {
+        const style = {
+            color: column.color,
+            background: column.cellBackground,
+            justifyContent: column.textAlign,
+        };
+
+        if (column.threshold) {
+            style.color = params.value >= column.threshold.value ? column.threshold.colorUp : column.threshold.colorDown;
+        }
+
+        if (column.colorMap) {
+            Object.entries(column.colorMap).forEach(([value, color]) => {
+                if (params.value === value) style.color = color;
+            });
+        }
+
+        return style;
+    };
+
     const columnDefs = useMemo(() => {
-        let coldef = [];
+        let colDefs = [];
         let colsFilters = { text: [], number: [], date: [] };
-        let isFilters = false;
+        let hasFilters = false;
+
         table.columnDefs.map((column) => {
-            let cols = { field: column.fieldName };
-            cols.headerName = column.headerName;
-            cols.initialHide = !column.visible;
-            switch (column.filter) {
-                case "text":
-                    cols.filter = "agSetColumnFilter";
-                    colsFilters.text.push({ name: column.fieldName, header: column.headerName });
-                    isFilters = true;
-                    break;
-                case "number":
-                    cols.filter = "agNumberColumnFilter";
-                    colsFilters.number.push({ name: column.fieldName, formatter: column.formatter, header: column.headerName });
-                    isFilters = true;
-                    break;
-                case "date":
-                    cols.filter = "agNumberColumnFilter";
-                    colsFilters.date.push({ name: column.fieldName, formatter: column.formatter, header: column.headerName });
-                    isFilters = true;
-                    break;
-            }
-
-            if (column.formatterType == "number") {
-                cols.cellRenderer = (params) => {
-                    let value = valueFormatter(
-                        params,
-                        column.formatter.style,
-                        column.formatter.currency,
-                        column.formatter.minimumFractionDigits,
-                        column.formatter.maximumFractionDigits,
-                        column.formatter.short,
-                        column.formatter.separator
-                    )
-
-                    return cellRenderer(value, column.rectBackground, column.strFormat);
-                }
-            } else if (column.formatterType == "date") {
-                switch (column.formatter) {
-                    case "datetime":
-                        cols.cellRenderer = (params) => cellRenderer(displayDateTimeString(params.value), column.rectBackground, column.strFormat);
-                        break;
-                    case "date":
-                        cols.cellRenderer = (params) => cellRenderer(displayDateString(params.value), column.rectBackground, column.strFormat);
-                        break;
-                    case "time":
-                        cols.cellRenderer = (params) => cellRenderer(displayTimeString(params.value), column.rectBackground, column.strFormat);
-                        cols.filterValueGetter = (params) => extractTimeInMilliseconds(params.data[column.fieldName]);
-                        break;
-                }
-            } else {
-                cols.cellRenderer = (params) => cellRenderer(params.value, column.rectBackground, column.strFormat);
-            }
-
-            cols.cellStyle = (params) => {
-                let style = {
-                    color: column.color,
-                    background: column.cellBackground,
-                    justifyContent: column.textAlign
-                };
-
-                if (column.threshold)
-                    style.color = params.value >= column.threshold.value ? column.threshold.colorUp : column.threshold.colorDown;
-
-                Object.entries(column.colorMap).map(([value, color]) => {
-                    if (params.value == value) style.color = color;
-                })
-
-                return style;
+            const colDef = {
+                field: column.fieldName,
+                headerName: column.headerName,
+                initialHide: !column.visible,
+                filter: column.filter === "text" ? "agSetColumnFilter" : column.filter === "number" ? "agNumberColumnFilter" : column.filter === "date" ? "agNumberColumnFilter" : undefined,
+                cellRenderer: getCellRenderer(column),
+                cellStyle: (params) => getCellStyle(params, column),
+                width: column.width,
+                flex: !column.width && table.flex && 1,
+                initialSort: column.defaultSort,
+                autoHeight: true,
             };
 
-            if (table.columnFilter) colsFilters.cols = true;
-            if (table.columnFilter || isFilters) setFilters(colsFilters);
-            if (column.width) cols.width = column.width;
-            else if (table.flex) cols.flex = 1;
+            if (column.filter) {
+                colsFilters[column.filter].push({ name: column.fieldName, header: column.headerName, formatter: column.formatter });
+                hasFilters = true;
 
-            cols.initialSort = column.defaultSort;
-            cols.autoHeight = true;
-            coldef.push(cols);
+                if (column.formatterType == "date" && column.formatter == "time") {
+                    colDef.filterValueGetter = (params) => extractTimeInMilliseconds(params.data[column.fieldName]);
+                }
+            }
+
+            colDefs.push(colDef);
         });
 
-        return coldef;
+        if (hasFilters || table.columnFilter) setFilters(colsFilters);
+        return colDefs;
     }, []);
 
     const defaultColDef = useMemo(() => {
@@ -109,10 +87,6 @@ const AgGrid = ({ table }) => {
             minWidth: 20,
         }
     }, []);
-
-    const cellRenderer = (value, background, strFormat) => {
-        return <div className="cell" style={{ backgroundColor: background }} dangerouslySetInnerHTML={{ __html: util.format(strFormat, value) }} />;
-    }
 
     const sideBar = useMemo(() => {
         if (filters)
@@ -136,39 +110,36 @@ const AgGrid = ({ table }) => {
             }
     }, [filters]);
 
-    const valueFormatter = (
-        params,
-        style,
-        currency,
-        mindigits,
-        maxdigits,
-        short,
-        separator
-    ) => {
-        if (
-            params.value === null ||
-            params.value === NaN ||
-            isNaN(Number(params.value))
-        )
-            return params.value;
+    const formatNumber = (value, formatter) => {
+        if (isNaN(Number(value))) return value;
+        const settings = {
+            useGrouping: formatter.separator,
+            style: formatter.style,
+            currencyDisplay: "narrowSymbol",
+            minimumFractionDigits: formatter.minimumFractionDigits,
+            maximumFractionDigits: formatter.maximumFractionDigits,
+        };
 
-        let settings = {};
-
-        if (short) {
-            settings["notation"] = "compact";
-            settings["compactDisplay"] = "short";
+        if (formatter.short) {
+            settings.notation = "compact";
+            settings.compactDisplay = "short";
         }
+        if (formatter.currency) settings.currency = formatter.currency;
 
-        settings["useGrouping"] = separator;
-        settings["style"] = style;
-        settings["currencyDisplay"] = "narrowSymbol";
-        settings["minimumFractionDigits"] = mindigits;
-        settings["maximumFractionDigits"] = maxdigits;
+        return new Intl.NumberFormat("en-GB", settings).format(Number(value));
+    };
 
-        if (currency) settings["currency"] = currency;
-
-        let formatter = new Intl.NumberFormat("en-GB", settings);
-        return formatter.format(Number(params.value));
+    const formatDate = (value, formatter) => {
+        switch (formatter) {
+            case "datetime":
+                return displayDateTimeString(value);
+            case "date":
+                return displayDateString(value);
+            case "time":
+                return displayTimeString(value);
+            default:
+                return value;
+        }
     };
 
     const onStateUpdated = useCallback((params) => {
@@ -182,38 +153,29 @@ const AgGrid = ({ table }) => {
 
         table.columnDefs.map((column) => {
             if (column.filterInclude && column.filterInclude.length) {
-                params.api.setColumnFilterModel(column.fieldName, {
-                    filterType: 'text',
-                    type: 'set',
-                    values: column.filterInclude.filter(value => !column.filterExclude.includes(value)),
-                }).then(() => {
-                    params.api.onFilterChanged();
-                });
+                applyFilter(params, column.fieldName, column.filterInclude.filter(value => !column.filterExclude.includes(value)));
             } else if (column.filterExclude && column.filterExclude.length) {
                 let uniqueValues = {};
                 params.api.forEachNode(elem => {
                     const value = elem.data[column.fieldName];
-                    if (!(value in uniqueValues)) {
-                        uniqueValues[value] = elem.displayed;
-                    } else {
-                        if (elem.displayed) uniqueValues[value] = true;
-                    }
+                    uniqueValues[value] = elem.displayed || uniqueValues[value];
                 });
-                const result = Object.entries(uniqueValues).map(([value, checked]) => {
-                    if (checked) return value;
-                });
-                const filteredValues = result.filter(value => !column.filterExclude.includes(value));
+                const filteredValues = Object.keys(uniqueValues).filter(value => uniqueValues[value]);
 
-                params.api.setColumnFilterModel(column.fieldName, {
-                    filterType: 'text',
-                    type: 'set',
-                    values: filteredValues,
-                }).then(() => {
-                    params.api.onFilterChanged();
-                });
+                applyFilter(params, column.fieldName, filteredValues.filter(value => !column.filterExclude.includes(value)));
             }
         })
     }, []);
+
+    const applyFilter = (params, colId, values) => {
+        params.api.setColumnFilterModel(colId, {
+            filterType: 'text',
+            type: 'set',
+            values: values,
+        }).then(() => {
+            params.api.onFilterChanged();
+        });
+    };
 
     return (
         <div className="ag-theme-quartz aggrid">

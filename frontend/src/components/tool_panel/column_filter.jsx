@@ -7,113 +7,87 @@ const ColumnFilter = ({ api }) => {
     const [all, setAll] = useState(true);
 
     useEffect(() => {
-        let result = [];
-        let isAll = true;
-        api.getAllGridColumns().map(elem => {
-            if (!elem.visible) isAll = false;
-            result.push({
-                colId: elem.colId,
-                header: elem.colDef.headerName,
-                checked: elem.visible,
-            });
-        });
+        let columnNodes = api.getAllGridColumns().map(elem => ({
+            colId: elem.colId,
+            header: elem.colDef.headerName,
+            checked: elem.visible,
+        }));
 
-        setNodes(result);
-        setFilteredNodes(result);
-        setAll(isAll);
+        const allChecked = columnNodes.every((col) => col.checked);
+
+        setNodes(columnNodes);
+        setFilteredNodes(columnNodes);
+        setAll(allChecked);
     }, [api]);
 
-    const clickCheck = (e) => {
-        let isAll = true;
-        const updatedCheckedState = nodes.map((item) => {
-            if (String(item.header) === e.target.value) {
-                if (item.checked) isAll = false;
-                return {
-                    ...item,
-                    checked: !item.checked
-                };
-            }
-            if (!item.checked) isAll = false;
-            return item
-        });
+    const handleCheck = (e) => {
+        const updatedNodes = nodes.map((node) => {
+            String(item.header) === e.target.value
+                ? { ...node, checked: !item.checked }
+                : node
+        }
+        );
 
-        setAll(isAll);
-        setNodes(updatedCheckedState);
-        setFilteredNodes(updatedCheckedState);
-        if (searchValue) inputSearch(searchValue, updatedCheckedState)
+        const allChecked = updatedNodes.every((node) => node.checked);
+
+        setAll(allChecked);
+        setNodes(updatedNodes);
+        setFilteredNodes(updatedNodes);
+        if (searchValue) inputSearch(searchValue, updatedNodes)
     };
 
-    const clickAll = (e) => {
-        let updatedCheckedState = [];
-        updatedCheckedState = nodes.map((item) => {
-            return {
-                ...item,
-                checked: e.target.checked
-            }
-        })
+    const handleCheckAll = (e) => {
+        let updatedNodes = nodes.map((node) => ({
+            ...node,
+            checked: e.target.checked,
+        }));
 
-        setAll(state => !state);
-        setFilteredNodes(updatedCheckedState);
-        setNodes(updatedCheckedState);
+        setAll(e.target.checked);
+        setFilteredNodes(updatedNodes);
+        setNodes(updatedNodes);
     }
 
-    const apply = () => {
-        let checkedValues = []
-        nodes.forEach((item) => {
-            if (item.checked) checkedValues.push(String(item.colId))
-        });
+    const updateFilter = () => {
+        const visibleColumns = nodes.filter((node) => node.checked).map((node) => node.colId);
 
         let columnDefs = api.getColumnDefs();
         columnDefs.forEach((colDef) => {
-            if (checkedValues.includes(colDef.field)) {
-                colDef.hide = false;
-            } else {
-                colDef.hide = true;
-            }
+            colDef.hide = !visibleColumns.includes(colDef.field);
         });
 
         api.setGridOption('columnDefs', columnDefs);
         setSearchValue("");
     }
 
-    const reset = () => {
+    const resetFilter = () => {
         const columnDefs = api.getColumnDefs()
         columnDefs.forEach((colDef) => {
             colDef.hide = false;
         });
 
-        let updatedCheckedState = nodes.map((item) => {
-            return {
-                ...item,
-                checked: true
-            }
-        })
+        let updatedNodes = nodes.map((item) => ({
+            ...item,
+            checked: true
+        }));
 
         api.setGridOption('columnDefs', columnDefs);
-
         setAll(true);
-        setFilteredNodes(updatedCheckedState);
-        setNodes(updatedCheckedState);
+        setFilteredNodes(updatedNodes);
+        setNodes(updatedNodes);
     }
 
-    const inputSearch = (value, nodes_ = nodes) => {
+    const filterNodes = (value, nodesToFilter = nodes) => {
         setSearchValue(value);
         if (value.len == 0) {
             return;
         }
-        const searchValue = value.toLowerCase();
-        let regex = new RegExp(searchValue, 'g');
 
-        let searchedArray = new Array();
+        const searchRegex = new RegExp(value.toLowerCase(), "g");
+        const filteredNodes = nodesToFilter.filter((node) =>
+            String(node.colId).toLowerCase().match(searchRegex)
+        );
 
-        for (let node of nodes_) {
-            const nodeValue = String(node.colId);
-            if (!!nodeValue.toLowerCase().match(regex)) {
-                searchedArray.push(node);
-            }
-        }
-
-        setFilteredNodes(searchedArray);
+        setFilteredNodes(filteredNodes);
     }
 
     return (
@@ -125,7 +99,7 @@ const ColumnFilter = ({ api }) => {
                         className='searcher'
                         placeholder={`Search for columns...`}
                         value={searchValue}
-                        onInput={e => inputSearch(e.target.value)}
+                        onInput={e => filterNodes(e.target.value)}
                     />
                     <div className='column_filter_items'>
                         <div className='column_filter_item'>
@@ -134,36 +108,29 @@ const ColumnFilter = ({ api }) => {
                                 className='input_cols_filter'
                                 type='checkbox'
                                 value='all'
-                                onChange={clickAll}
+                                onChange={handleCheckAll}
                                 checked={all}
                             />
-                            <label
-                                htmlFor='allcols'
-                                className='input_column_name'
-                            >
-                                (All)
-                            </label>
+                            <label htmlFor='allcols' className='input_column_name'>(All)</label>
                         </div>
-                        {
-                            filteredNodes.map((node, index) => {
-                                return <div className='column_filter_item' key={index}>
-                                    <input
-                                        id={`cols${index}`}
-                                        className='input_cols_filter'
-                                        onChange={clickCheck}
-                                        type='checkbox'
-                                        value={node.header}
-                                        checked={node.checked}
-                                    />
-                                    <label htmlFor={`cols${index}`} className='input_column_name'>{node.header}</label>
-                                </div>
-                            })
-                        }
+                        {filteredNodes.map((node, index) => (
+                            <div className='column_filter_item' key={index}>
+                                <input
+                                    id={`cols${index}`}
+                                    className='input_cols_filter'
+                                    onChange={handleCheck}
+                                    type='checkbox'
+                                    value={node.header}
+                                    checked={node.checked}
+                                />
+                                <label htmlFor={`cols${index}`} className='input_column_name'>{node.header}</label>
+                            </div>
+                        ))}
                     </div>
                 </div>
                 <div className='apply_button_wrapper'>
-                    <button className='apply_button' onClick={reset}>Reset</button>
-                    <button className='apply_button' onClick={apply}>Apply</button>
+                    <button className='apply_button' onClick={resetFilter}>Reset</button>
+                    <button className='apply_button' onClick={updateFilter}>Apply</button>
                 </div>
             </div>
         </div>
