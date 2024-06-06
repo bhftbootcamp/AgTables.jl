@@ -75,7 +75,11 @@ table = ag_table(
         header_name = "Status",
         filter = true,
         rect_background = "#f0efeb",
-        color_map = Dict("In Air" => "#8ac926", "Canceled" => "#ff595e", "Scheduled" => "#999999"),
+        color_map = Dict(
+            "In Air" => "#8ac926",
+            "Canceled" => "#ff595e",
+            "Scheduled" => "#999999",
+        ),
         text_align = AG_CENTER,
     ),
 )
