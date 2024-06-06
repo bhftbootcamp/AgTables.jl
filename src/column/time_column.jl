@@ -12,7 +12,7 @@ Type defining a time column and its display settings.
 | `header_name::String` | `field_name` | Override `field_name` as default with custom value. |
 | `visible::Bool` | `true` | Column visibility. |
 | `filter::Bool` | `false` | Enables a filter for column values. |
-| `default_sort::AG_SORT_MODES` | `nothing` (`AG_ASC`, `AG_DESC`) | Initial sorting in the column. |
+| `default_sort::AG_SORT_MODES` | `nothing` (`AG_ASC`, `AG_DESC`) | Initial sorting in the column (ascending or descending order). |
 | `date_formatter::AG_DATE_FORMATTER` | `AG_DATE_TIME` (`AG_TIME`, `AG_DATE`) | Specify time display format. |
 | `str_format::String` | `"%s"` | String template for formatting values. The `%s` is replaced with the value. |
 | `width::Integer` | `nothing` | Column width. |
@@ -20,7 +20,7 @@ Type defining a time column and its display settings.
 | `rect_background::String` | `"#fff"` | Background color of the rectangle. |
 | `color::String` | `"#000"` | Text color. |
 | `text_align::AG_TEXTALIGN_TYPES` | `AG_CENTER` (`AG_LEFT`, `AG_RIGHT`) | Text alignment. |
-| `color_map::Dict{Union{Real,TimeType},String}` | `Dict{Real,String}()` | A dictionary of colors by their values. |
+| `color_map::Dict{Union{Real,TimeType},String}` | `Dict{Real,String}()` | Dictionary with colors of values (`value` => `color`). |
 | `threshold::AGThreshold` | `nothing` | Settings for highlighting cells based on a threshold value. |
 """
 struct AgTimeColumnDef <: AbstractColumnDef

@@ -75,8 +75,7 @@ table = ag_table(
         header_name = "Status",
         filter = true,
         rect_background = "#f0efeb",
-        color_map = Dict("In Air" => "#8ac926"),
-        threshold = AGThreshold("In Air", color_up = "#999999", color_down = "#ff595e"),
+        color_map = Dict("In Air" => "#8ac926", "Canceled" => "#ff595e", "Scheduled" => "#999999"),
         text_align = AG_CENTER,
     ),
 )
