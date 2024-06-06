@@ -226,9 +226,6 @@ const AgGrid = ({ table }) => {
                 headerHeight={table.headerHeight}
                 rowHeight={table.rowHeight}
                 multiSortKey={"ctrl"}
-                // autoSizeStrategy={{
-                //     type: 'fitCellContents'
-                // }}
                 onStateUpdated={onStateUpdated}
                 onFirstDataRendered={onFirstDataRendered}
             />
