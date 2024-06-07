@@ -23,8 +23,8 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
         let minDisplayed = Math.min(...displayedValues);
         let maxDisplayed = Math.max(...displayedValues);
 
-        if (isNaN(maxVal)) return [0, 0];
-        if (isNaN(minVal)) return [0, 0];
+        if (isNaN(minVal) || isNaN(minVal) || !displayedValues.length) return [0, 0];
+
 
         const formatValue = (value) => {
             switch (formatter) {
@@ -49,6 +49,19 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
         ref.current.style.background = `linear-gradient(to right, #e5e5e5 ${percent1}% , #666666 ${percent1}% , #666666 ${percent2}%, #e5e5e5 ${percent2}%)`;
     }, [minValue, maxValue, min, max]);
 
+    useEffect(() => {
+        api.setColumnFilterModel(filter, {
+            operator: 'AND',
+            conditions: [
+                { filterType: 'number', type: 'greaterThanOrEqual', filter: Number(minValue) },
+                { filterType: 'number', type: 'lessThanOrEqual', filter: Number(maxValue) }
+            ]
+        }).then(() => {
+            api.onFilterChanged();
+            setRefresh(prev => !prev);
+        });
+    }, [minValue, maxValue]);
+
     const [dateFormatter, patern] = useMemo(() => {
         switch (formatter) {
             case "datetime": return [displayDateTimeString, "[0-9]{2}.[0-9]{2}.[0-9]{4}T[0-9]{2}:[0-9]{2}"]
@@ -58,37 +71,16 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
         }
     }, [formatter]);
 
-    const hanldeSlide = (setFunc, value, comparator, boundValue, setInputFunc) => {
-        if (value >= comparator) {
-            setFunc(boundValue);
-            setInputFunc(dateFormatter(boundValue));
-            fillColor(boundValue, boundValue);
+    const handleSlide = (value, isMin) => {
+        if (isMin) {
+            const newValue = value >= maxValue ? maxValue : value;
+            setMinValue(newValue);
+            setInputMin(dateFormatter(newValue));
         } else {
-            setFunc(value);
-            setInputFunc(dateFormatter(value));
-            fillColor(value, boundValue);
+            const newValue = value <= minValue ? minValue : value;
+            setMaxValue(newValue);
+            setInputMax(dateFormatter(newValue));
         }
-    };
-
-    const fillColor = (minValue, maxValue) => {
-        let percent1 = ((minValue - min) / (max - min)) * 100;
-        let percent2 = ((maxValue - min) / (max - min)) * 100;
-
-        ref.current.style.background = `linear-gradient(to right, #e5e5e5 ${percent1}% , #666666 ${percent1}% , #666666 ${percent2}%, #e5e5e5 ${percent2}%)`;
-    };
-
-    const updateFilter = (minValue, maxValue) => {
-        fillColor(minValue, maxValue);
-        api.setColumnFilterModel(filter, {
-            operator: 'AND',
-            conditions: [
-                { filterType: 'number', type: 'greaterThanOrEqual', filter: Number(minValue) },
-                { filterType: 'number', type: 'lessThanOrEqual', filter: Number(maxValue) }
-            ]
-        }).then(() => {
-            api.onFilterChanged();
-            setRefresh("filter");
-        });
     };
 
     const handleChange = (event, isMin) => {
@@ -97,19 +89,15 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
             if (isMin) {
                 setMinValue(value);
                 setInputMin(event.target.value);
-                updateFilter(value, maxValue);
             } else {
                 setMaxValue(value);
                 setInputMax(event.target.value);
-                updateFilter(minValue, value);
             }
         } else {
             if (isMin) {
                 setInputMin(dateFormatter(minValue));
-                updateFilter(minValue, maxValue);
             } else {
                 setInputMax(dateFormatter(maxValue));
-                updateFilter(minValue, maxValue);
             }
         }
     };
@@ -126,26 +114,28 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
             const xNew = xStart - evtMove.clientX;
             xStart = evtMove.clientX;
             if (minV - dt * xNew > min && maxV - dt * xNew < max) {
-                setMinValue(minV - dt * xNew);
-                setMaxValue(maxV - dt * xNew);
-                minV -= dt * xNew;
-                maxV -= dt * xNew;
+                setMinValue(minV -= dt * xNew);
+                setMaxValue(maxV -= dt * xNew);
             } else {
-                const handleBoundary = (boundary, boundaryValue, delta) => {
-                    setMinValue(boundary);
-                    setMaxValue(boundaryValue - delta);
-                    minV = boundary;
-                    maxV -= delta;
-                };
-                if (minV - dt * xNew < min && minV > min) handleBoundary(min, maxV, minV - min);
-                else if (maxV - dt * xNew > max && maxV < max) handleBoundary(max, minV, maxV - max);
+                if (minV - dt * xNew < min) {
+                    const delta = minV - min;
+                    setMinValue(min);
+                    setMaxValue(maxV -= delta);
+                    minV = min;
+                }
+                if (maxV - dt * xNew > max) {
+                    const delta = maxV - max;
+                    setMaxValue(max);
+                    setMinValue(minV -= delta);
+                    maxV = max;
+                }
             }
-            fillColor(minV, maxV);
+            setInputMin(dateFormatter(minV));
+            setInputMax(dateFormatter(maxV));
         }
         const onMouseUp = () => {
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
-            updateFilter(minV, maxV);
         }
 
         document.addEventListener('mousemove', onMouseMove);
@@ -187,8 +177,7 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
                             min={min}
                             max={max}
                             value={minValue}
-                            onInput={(e) => hanldeSlide(setMinValue, Number(e.target.value), maxValue, maxValue, setInputMin)}
-                            onMouseUp={() => updateFilter(minValue, maxValue)}
+                            onInput={(e) => handleSlide(Number(e.target.value), true)}
                         />
                         <input
                             className='input_slider2'
@@ -196,8 +185,7 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
                             min={min}
                             max={max}
                             value={maxValue}
-                            onInput={(e) => hanldeSlide(setMaxValue, Number(e.target.value), minValue, minValue, setInputMax)}
-                            onMouseUp={() => updateFilter(minValue, maxValue)}
+                            onInput={(e) => handleSlide(Number(e.target.value), false)}
                         />
                     </div>
                 </div>

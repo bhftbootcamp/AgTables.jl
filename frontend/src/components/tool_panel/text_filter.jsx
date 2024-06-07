@@ -7,8 +7,6 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
     const [all, setAll] = useState(true);
 
     useEffect(() => {
-        if (refresh && refresh == filter) return;
-        
         let uniqueValues = {};
         let isAll = true;
 
@@ -21,15 +19,15 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
             }
         });
 
-        const result = Object.entries(uniqueValues).map(([value, checked]) => {
+        const nodes = Object.entries(uniqueValues).map(([value, checked]) => {
             if (!checked) isAll = false;
             return { value, checked };
         });
 
-        result.sort((a, b) => a.value.localeCompare(b.value));
+        nodes.sort((a, b) => a.value.localeCompare(b.value));
 
-        setNodes(result);
-        setFilteredNodes(result);
+        setNodes(nodes);
+        setFilteredNodes(nodes);
         setAll(isAll);
     }, [api, refresh]);
 

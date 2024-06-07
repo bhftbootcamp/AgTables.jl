@@ -5,6 +5,8 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
     const [maxValue, setMaxValue] = useState(0);
     const [isMinEditing, setIsMinEditing] = useState(false);
     const [isMaxEditing, setIsMaxEditing] = useState(false);
+    const [minInputValue, setMinInputValue] = useState("0");
+    const [maxInputValue, setMaxInputValue] = useState("0");
     const ref = useRef(null);
 
     const calculateStep = (min, max) => {
@@ -25,11 +27,12 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
         const maxDisplayed = Math.max(...displayedValues);
         const minDisplayed = Math.min(...displayedValues);
 
-        if (isNaN(maxVal)) return [0, 0, 1];
-        if (isNaN(minVal)) return [0, 0, 1];
+        if (isNaN(minVal) || isNaN(minVal) || !displayedValues.length) return [0, 0, 1];
 
         setMaxValue(maxDisplayed);
         setMinValue(minDisplayed);
+        setMaxInputValue(maxDisplayed.toString())
+        setMinInputValue(minInputValue.toString())
 
         return [maxVal, minVal, calculateStep(minVal, maxVal)];
     }, [api]);
@@ -39,6 +42,19 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
         const percent2 = ((maxValue - min) / (max - min)) * 100;
         ref.current.style.background = `linear-gradient(to right, #e5e5e5 ${percent1}% , #666666 ${percent1}% , #666666 ${percent2}%, #e5e5e5 ${percent2}%)`;
     }, [minValue, maxValue, min, max]);
+
+    useEffect(() => {
+        api.setColumnFilterModel(filter, {
+            operator: 'AND',
+            conditions: [
+                { filterType: 'number', type: 'greaterThanOrEqual', filter: Number(minValue) },
+                { filterType: 'number', type: 'lessThanOrEqual', filter: Number(maxValue) }
+            ]
+        }).then(() => {
+            api.onFilterChanged();
+            setRefresh(prev => !prev);
+        });
+    }, [minValue, maxValue]);
 
     const valueFormatter = (value) => {
         if (!value || !formatter) return value;
@@ -62,60 +78,48 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
         if (isMin) {
             const newValue = numValue >= maxValue ? maxValue : numValue;
             setMinValue(newValue);
-            fillColor(newValue, maxValue);
+            setMinInputValue(newValue.toString());
         } else {
             const newValue = numValue <= minValue ? minValue : numValue;
             setMaxValue(newValue);
-            fillColor(minValue, newValue);
+            setMaxInputValue(newValue.toString());
         }
     };
 
-    const fillColor = (minValue, maxValue) => {
-        const percent1 = ((minValue - min) / (max - min)) * 100;
-        const percent2 = ((maxValue - min) / (max - min)) * 100;
-        ref.current.style.background = `linear-gradient(to right, #e5e5e5 ${percent1}%, #666666 ${percent1}%, #666666 ${percent2}%, #e5e5e5 ${percent2}%)`;
-    };
-
-    const updateFilter = (minValue, maxValue) => {
-        fillColor(minValue, maxValue);
-        api.setColumnFilterModel(filter, {
-            operator: 'AND',
-            conditions: [
-                { filterType: 'number', type: 'greaterThanOrEqual', filter: Number(minValue) },
-                { filterType: 'number', type: 'lessThanOrEqual', filter: Number(maxValue) }
-            ]
-        }).then(() => {
-            api.onFilterChanged();
-            setRefresh(filter);
-        });
-    };
-
-    // const handleInputChange = (event, isMin) => {
-    //     const number = Number(event.target.value);
-    //     if (!isNaN(number)) {
-    //         if (isMin) {
-    //             setMinValue(number);
-    //             updateFilter(number, maxValue);
-    //         } else {
-    //             setMaxValue(number);
-    //             updateFilter(minValue, number);
-    //         }
-    //     } 
-    // };
-
     const handleInputChange = (event, isMin) => {
         const value = event.target.value;
-        
-        const parsedValue = parseFloat(value);
-        if (!isNaN(parsedValue)) {
-            if (isMin) {
-                setMinValue(parsedValue);
-                updateFilter(parsedValue, maxValue);
-            } else {
-                setMaxValue(parsedValue);
-                updateFilter(minValue, parsedValue);
+        const number = Number(value);
+        if (isMin) {
+            setMinInputValue(value);
+            if (!isNaN(number) && number <= maxValue) {
+                setMinValue(number);
             }
-        };
+            return;
+        }
+        setMaxInputValue(value);
+        if (!isNaN(number) && number >= minValue) {
+            setMaxValue(number);
+        }
+    };
+
+    const handleBlur = (isMin) => {
+        if (isMin) {
+            setIsMinEditing(false);
+            setMinInputValue(valueFormatter(minValue));
+        } else {
+            setIsMaxEditing(false);
+            setMaxInputValue(valueFormatter(maxValue));
+        }
+    };
+
+    const handleFocus = (isMin) => {
+        if (isMin) {
+            setIsMinEditing(true);
+            setMinInputValue(minValue.toString());
+        } else {
+            setIsMaxEditing(true);
+            setMaxInputValue(maxValue.toString());
+        }
     };
 
     const handleTrackClick = (event) => {
@@ -145,12 +149,10 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
                     maxV = max;
                 }
             }
-            fillColor(minV, maxV);
         };
         const onMouseUp = () => {
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
-            updateFilter(minV, maxV);
         };
 
         document.addEventListener('mousemove', onMouseMove);
@@ -165,19 +167,19 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
                     <div className='values'>
                         <input
                             className='input_numeric_slider'
-                            value={isMinEditing ? minValue : valueFormatter(minValue)}
+                            value={isMinEditing ? minInputValue : valueFormatter(minValue)}
                             onChange={(e) => handleInputChange(e, true)}
-                            onBlur={() => setIsMinEditing(false)}
-                            onFocus={() => setIsMinEditing(true)}
+                            onBlur={() => handleBlur(true)}
+                            onFocus={() => handleFocus(true)}
                             type='text'
                         />
                         <input
                             className='input_numeric_slider'
                             style={{ textAlign: "end" }}
-                            value={isMaxEditing ? maxValue : valueFormatter(maxValue)}
+                            value={isMaxEditing ? maxInputValue : valueFormatter(maxValue)}
                             onChange={(e) => handleInputChange(e, false)}
-                            onBlur={() => setIsMaxEditing(false)}
-                            onFocus={() => setIsMaxEditing(true)}
+                            onBlur={() => handleBlur(false)}
+                            onFocus={() => handleFocus(false)}
                             type='text'
                         />
                     </div>
@@ -197,7 +199,6 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
                             value={minValue}
                             className='input_slider1'
                             onInput={(e) => handleSlide(e.target.value, true)}
-                            onMouseUp={() => updateFilter(minValue, maxValue)}
                         />
                         <input
                             type='range'
@@ -207,7 +208,6 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
                             value={maxValue}
                             className='input_slider2'
                             onInput={(e) => handleSlide(e.target.value, false)}
-                            onMouseUp={() => updateFilter(minValue, maxValue)}
                         />
                     </div>
                 </div>
