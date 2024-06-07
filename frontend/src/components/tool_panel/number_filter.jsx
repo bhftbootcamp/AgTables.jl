@@ -65,8 +65,8 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
             useGrouping: formatter.separator,
             style: formatter.style,
             currencyDisplay: "narrowSymbol",
-            minimumFractionDigits: formatter.mindigits,
-            maximumFractionDigits: formatter.maxdigits,
+            minimumFractionDigits: formatter.minimumFractionDigits,
+            maximumFractionDigits: formatter.maximumFractionDigits,
             currency: formatter.currency || undefined,
         };
 
