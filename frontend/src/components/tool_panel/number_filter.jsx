@@ -22,12 +22,16 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
             node.displayed && displayedValues.push(node.data[filter]);
         });
 
-        const maxVal = Math.max(...values);
-        const minVal = Math.min(...values);
-        const maxDisplayed = Math.max(...displayedValues);
-        const minDisplayed = Math.min(...displayedValues);
+        let maxVal = Math.max(...values);
+        let minVal = Math.min(...values);
+        let maxDisplayed = Math.max(...displayedValues);
+        let minDisplayed = Math.min(...displayedValues);
 
-        if (isNaN(minVal) || isNaN(minVal) || !displayedValues.length) return [0, 0, 1];
+        if (isNaN(minVal) || isNaN(minVal)) return [0, 0, 1];
+        if (!displayedValues.length) {
+            maxDisplayed = 0;
+            minDisplayed = 0;
+        }
 
         setMaxValue(maxDisplayed);
         setMinValue(minDisplayed);

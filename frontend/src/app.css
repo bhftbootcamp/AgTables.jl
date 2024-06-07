@@ -237,6 +237,7 @@ input[type='range'] {
 
     position: absolute;
     margin: 0;
+    padding: 0 5px;
     top: 3px;
     bottom: 0;
 
@@ -245,12 +246,12 @@ input[type='range'] {
 }
 
 .slider_track {
-    width: calc(100% - 12px);
+    width: calc(100% - 18px);
     height: 4px;
 
     position: absolute;
     margin: 0;
-    left: 6px;
+    left: 9px;
     top: 5.5px;
     bottom: 0;
 
@@ -258,6 +259,14 @@ input[type='range'] {
     border-radius: 3px;
 
     cursor: pointer;
+}
+
+.input_slider1 {
+    left: -4px;
+}
+
+.input_slider2 {
+    right: -5px;
 }
 
 input[type='range']::-webkit-slider-runnable-track {

@@ -9,28 +9,22 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
     useEffect(() => {
         if (filter == refresh.filter) return;
 
-        let uniqueValues = {};
-        let isAll = true;
+        let uniqueValues = new Set();
 
         api.forEachNode(elem => {
             const value = elem.data[filter];
-            if (!(value in uniqueValues)) {
-                uniqueValues[value] = elem.displayed;
-            } else if (elem.displayed) {
-                uniqueValues[value] = true;
-            }
+            if (elem.displayed) uniqueValues.add(value);
         });
 
-        let nodes = Object.entries(uniqueValues).map(([value, checked]) => {
-            if (!checked) isAll = false;
-            return { value, checked };
-        });
-
-        nodes = nodes.filter((node) => node.checked).sort((a, b) => a.value.localeCompare(b.value));
+        let nodes = Array.from(uniqueValues).map(value => ({
+            value,
+            checked: true,
+        }));
+        nodes = nodes.sort((a, b) => a.value.localeCompare(b.value));
 
         setNodes(nodes);
         setFilteredNodes(nodes);
-        setAll(isAll);
+        setAll(true);
     }, [api, refresh]);
 
     const handleCheck = (e) => {

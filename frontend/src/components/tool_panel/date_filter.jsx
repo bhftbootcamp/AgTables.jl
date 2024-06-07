@@ -8,7 +8,7 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
     const [maxValue, setMaxValue] = useState(0);
     const ref = useRef(null);
 
-    const [max, min] = useMemo(() => {        
+    const [max, min] = useMemo(() => {
         let values = [];
         let displayedValues = [];
 
@@ -23,8 +23,11 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
         let minDisplayed = Math.min(...displayedValues);
         let maxDisplayed = Math.max(...displayedValues);
 
-        if (isNaN(minVal) || isNaN(minVal) || !displayedValues.length) return [0, 0];
-
+        if (isNaN(minVal) || isNaN(minVal)) return [0, 0];
+        if (!displayedValues.length) {
+            maxDisplayed = 0;
+            minDisplayed = 0;
+        }
 
         const formatValue = (value) => {
             switch (formatter) {
