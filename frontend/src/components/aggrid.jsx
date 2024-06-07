@@ -143,7 +143,6 @@ const AgGrid = ({ table }) => {
     };
 
     const onStateUpdated = useCallback((params) => {
-        console.log('State updated', params.state);
         setInitialState(params.state);
         localStorage.setItem(table.uuidKey, JSON.stringify(params.state));
     }, []);
