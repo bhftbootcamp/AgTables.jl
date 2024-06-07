@@ -15,7 +15,7 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
         api.forEachNode((node) => {
             const value = formatter == "time" ? extractTimeInMilliseconds(node.data[filter]) : node.data[filter];
             values.push(value)
-            if (node.displayed) displayedValues.push(value);
+            node.displayed && displayedValues.push(value);
         });
 
         let maxVal = Math.max(...values);
@@ -94,11 +94,7 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
                 setInputMax(event.target.value);
             }
         } else {
-            if (isMin) {
-                setInputMin(dateFormatter(minValue));
-            } else {
-                setInputMax(dateFormatter(maxValue));
-            }
+            isMin ? setInputMin(dateFormatter(minValue)) : setInputMax(dateFormatter(maxValue));
         }
     };
 

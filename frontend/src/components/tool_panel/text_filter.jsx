@@ -67,7 +67,7 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
             values: checkedValues
         }).then(() => {
             api.onFilterChanged();
-            setRefresh(filter);
+            setRefresh(prev => !prev);
         });
 
         setSearchValue("");
@@ -87,6 +87,7 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
         setAll(true);
         setFilteredNodes(updatedNodes);
         setNodes(updatedNodes);
+        setSearchValue("");
     }
 
     const filterNodes = (value, nodesList = nodes) => {

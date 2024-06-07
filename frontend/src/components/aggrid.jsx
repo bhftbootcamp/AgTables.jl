@@ -74,7 +74,7 @@ const AgGrid = ({ table }) => {
             colDefs.push(colDef);
         });
 
-        if (hasFilters || table.columnFilter) setFilters(colsFilters);
+        (hasFilters || table.columnFilter) && setFilters(colsFilters);
         return colDefs;
     }, []);
 

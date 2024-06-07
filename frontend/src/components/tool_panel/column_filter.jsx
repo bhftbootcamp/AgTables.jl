@@ -33,7 +33,7 @@ const ColumnFilter = ({ api }) => {
         setAll(allChecked);
         setNodes(updatedNodes);
         setFilteredNodes(updatedNodes);
-        if (searchValue) inputSearch(searchValue, updatedNodes)
+        searchValue && inputSearch(searchValue, updatedNodes)
     };
 
     const handleCheckAll = (e) => {

@@ -19,7 +19,7 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
         const displayedValues = [];
         api.forEachNode((node) => {
             values.push(node.data[filter]);
-            if (node.displayed) displayedValues.push(node.data[filter]);
+            node.displayed && displayedValues.push(node.data[filter]);
         });
 
         const maxVal = Math.max(...values);
