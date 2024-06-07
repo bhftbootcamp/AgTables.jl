@@ -5,7 +5,7 @@ import NumberFilter from "./number_filter.jsx";
 import ColumnFilter from "./column_filter.jsx";
 
 const FilterPanel = ({ api, filters, uuidKey }) => {
-    const [refresh, setRefresh] = useState(null);
+    const [refresh, setRefresh] = useState({ state: false, filter: "" });
     const ref = useRef(null);
 
     useEffect(() => {

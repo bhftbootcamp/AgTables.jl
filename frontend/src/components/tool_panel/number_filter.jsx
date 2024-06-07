@@ -52,7 +52,7 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
             ]
         }).then(() => {
             api.onFilterChanged();
-            setRefresh(prev => !prev);
+            setRefresh((prev) => ({ state: prev.state, filter: filter }));
         });
     }, [minValue, maxValue]);
 

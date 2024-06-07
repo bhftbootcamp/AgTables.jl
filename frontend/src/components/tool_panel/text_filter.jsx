@@ -7,6 +7,8 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
     const [all, setAll] = useState(true);
 
     useEffect(() => {
+        if (filter == refresh.filter) return;
+
         let uniqueValues = {};
         let isAll = true;
 
@@ -19,12 +21,12 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
             }
         });
 
-        const nodes = Object.entries(uniqueValues).map(([value, checked]) => {
+        let nodes = Object.entries(uniqueValues).map(([value, checked]) => {
             if (!checked) isAll = false;
             return { value, checked };
         });
 
-        nodes.sort((a, b) => a.value.localeCompare(b.value));
+        nodes = nodes.filter((node) => node.checked).sort((a, b) => a.value.localeCompare(b.value));
 
         setNodes(nodes);
         setFilteredNodes(nodes);
@@ -67,26 +69,18 @@ const TextFilter = ({ api, filter, header, refresh, setRefresh }) => {
             values: checkedValues
         }).then(() => {
             api.onFilterChanged();
-            setRefresh(prev => !prev);
+            setRefresh((prev) => ({ state: prev.state, filter: filter }));
         });
 
         setSearchValue("");
     };
 
     const resetFilter = () => {
-        let updatedNodes = nodes.map((item) => ({
-            ...item,
-            checked: true
-        }));
-
         api.setColumnFilterModel(filter, null).then(() => {
             api.onFilterChanged();
-            setRefresh(filter);
+            setRefresh((prev) => ({ state: prev.state, filter: "" }));
         });
 
-        setAll(true);
-        setFilteredNodes(updatedNodes);
-        setNodes(updatedNodes);
         setSearchValue("");
     }
 

@@ -8,7 +8,7 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
     const [maxValue, setMaxValue] = useState(0);
     const ref = useRef(null);
 
-    const [max, min] = useMemo(() => {
+    const [max, min] = useMemo(() => {        
         let values = [];
         let displayedValues = [];
 
@@ -58,7 +58,7 @@ const DateFilter = ({ api, filter, header, formatter, setRefresh }) => {
             ]
         }).then(() => {
             api.onFilterChanged();
-            setRefresh(prev => !prev);
+            setRefresh((prev) => ({ state: prev.state, filter: filter }));
         });
     }, [minValue, maxValue]);
 
