@@ -23,6 +23,7 @@
     --ag-wrapper-border-radius: 0px;
 }
 
+
 .ag-theme-quartz,
 .ag-theme-quartz-dark,
 .ag-theme-quartz-auto-dark {
@@ -73,6 +74,7 @@
     font-size: 13px;
 }
 
+
 .ag-side-buttons {
     display: none;
 }
@@ -99,4 +101,172 @@
 .ag-full-width-row .ag-cell-wrapper.ag-row-group {
     padding-left: 0;
     padding-right: 0;
+}
+
+
+.ag-theme-quartz .ag-filter-toolpanel-header,
+.ag-theme-quartz-dark .ag-filter-toolpanel-header,
+.ag-theme-quartz-auto-dark .ag-filter-toolpanel-header,
+.ag-theme-quartz .ag-filter-toolpanel-search,
+.ag-theme-quartz-dark .ag-filter-toolpanel-search,
+.ag-theme-quartz-auto-dark .ag-filter-toolpanel-search,
+.ag-theme-quartz .ag-side-buttons,
+.ag-theme-quartz-dark .ag-side-buttons,
+.ag-theme-quartz-auto-dark .ag-side-buttons {
+    display: none;
+}
+
+.ag-theme-quartz .ag-ltr .ag-filter-toolpanel-group-container,
+.ag-theme-quartz-dark .ag-ltr .ag-filter-toolpanel-group-container,
+.ag-theme-quartz-auto-dark .ag-ltr .ag-filter-toolpanel-group-container,
+.ag-set-filter-item {
+    padding: 0;
+}
+
+.ag-theme-quartz .ag-ltr .ag-filter-toolpanel-instance-filter,
+.ag-theme-quartz-dark .ag-ltr .ag-filter-toolpanel-instance-filter,
+.ag-theme-quartz-auto-dark .ag-ltr .ag-filter-toolpanel-instance-filter {
+    margin: calc(var(--ag-icon-size) * 0.5)
+}
+
+.ag-input-field-input .ag-checkbox-input {
+    width: 1px;
+    height: 1px;
+}
+
+.ag-filter-list-panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+}
+
+.ag-filter-apply-panel,
+.ag-theme-quartz .ag-filter-apply-panel {
+    padding: 0;
+}
+
+.ag-mini-filter {
+    margin: 0;
+}
+
+.ag-theme-quartz .ag-filter-apply-panel,
+.ag-theme-quartz-dark .ag-filter-apply-panel,
+.ag-theme-quartz-auto-dark .ag-filter-apply-panel {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+
+    position: relative;
+    margin: 0;
+    margin-top: 5px;
+}
+
+.ag-theme-quartz .ag-standard-button,
+.ag-theme-quartz-dark .ag-standard-button,
+.ag-theme-quartz-auto-dark .ag-standard-button {
+    position: relative;
+    width: calc(50% - 2.5px);
+
+    border: none;
+    border-radius: 0;
+    background-color: #eeeeee;
+    color: #646464;
+
+    font-size: 14px;
+    font-weight: 500;
+    padding: 2.5px;
+    margin: 0;
+
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ag-theme-quartz .ag-standard-button:hover,
+.ag-theme-quartz-dark .ag-standard-button:hover,
+.ag-theme-quartz-auto-dark .ag-standard-button:hover {
+    background-color: #cdcdcd;
+}
+
+.ag-input-field-input .ag-text-field-input,
+.ag-theme-quartz input[class^=ag-][type=text] {
+    border: none;
+}
+
+.ag-checkbox-input-wrapper.ag-checked::after,
+.ag-checkbox-input-wrapper::after,
+.ag-checkbox-input-wrapper.ag-indeterminate::after {
+    display: none;
+    content: none;
+    border: none;
+}
+
+.ag-checkbox .ag-input-wrapper,
+.ag-radio-button .ag-input-wrapper,
+.ag-wrapper.ag-input-wrapper.ag-text-field-input-wrapper {
+    margin-left: 5px;
+}
+
+.ag-theme-quartz input[class^=ag-][type=text] {
+    min-height: 20px;
+}
+
+.ag-theme-quartz .ag-mini-filter .ag-input-wrapper::before {
+    display: none;
+}
+
+.ag-theme-quartz .ag-ltr .ag-mini-filter input.ag-text-field-input {
+    font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif;
+    font-size: 13px;
+    padding: 0;
+}
+
+.ag-theme-quartz .ag-filter-toolpanel-group-item {
+    border-bottom: 1px solid #dbdddf;
+}
+
+.ag-checkbox-label {
+    font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ag-theme-quartz .ag-ltr .ag-filter-toolpanel-instance-filter {
+    margin: 5px;
+}
+
+.ag-filter-list-panel,
+.ag-filter-toolpanel-group-wrapper.ag-first-group-visible.ag-last-group-visible,
+.ag-group.ag-filter-toolpanel-group.ag-group-item-alignment-stretch.ag-filter-toolpanel-group-level-0,
+.ag-group-container.ag-group-container-vertical.ag-filter-toolpanel-group-container,
+.ag-filter-toolpanel-instance-body.ag-filter,
+.ag-filter,
+.ag-filter-wrapper.ag-focus-managed,
+.ag-set-filter {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.ag-filter-toolpanel-instance-filter {
+    height: calc(100% - 10px);
+}
+
+.ag-filter-body-wrapper.ag-set-filter-body-wrapper {
+    height: calc(100% - 31px);
+}
+
+.ag-group-container.ag-group-container-vertical.ag-filter-toolpanel-group-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ag-filter-toolpanel-instance.ag-group-item.ag-filter-toolpanel-group-item:has(.ag-filter-apply-panel) {
+    flex: 1;
 }

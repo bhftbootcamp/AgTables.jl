@@ -1,22 +1,22 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, forwardRef, useImperativeHandle } from "react";
 
-const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
+const NumberFilter = forwardRef(({ column, api, formatter}, ref) => {
     const [minValue, setMinValue] = useState(0);
     const [maxValue, setMaxValue] = useState(0);
     const [isMinEditing, setIsMinEditing] = useState(false);
     const [isMaxEditing, setIsMaxEditing] = useState(false);
     const [minInputValue, setMinInputValue] = useState("0");
     const [maxInputValue, setMaxInputValue] = useState("0");
-    const ref = useRef(null);
+    const sliderRef = useRef(null);
+    const filter = column.colId;
+    const header = column.userProvidedColDef.headerName;
 
-    const calculateStep = (min, max) => {
-        const range = max - min;
-        return range === 0 ? 1 : range / 100;
-    };
+    const calculateStep = (min, max) => (max - min === 0 ? 1 : (max - min) / 100);
 
     const [max, min, step] = useMemo(() => {
         const values = [];
         const displayedValues = [];
+
         api.forEachNode((node) => {
             values.push(node.data[filter]);
             node.displayed && displayedValues.push(node.data[filter]);
@@ -24,14 +24,10 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
 
         let maxVal = Math.max(...values);
         let minVal = Math.min(...values);
-        let maxDisplayed = Math.max(...displayedValues);
-        let minDisplayed = Math.min(...displayedValues);
+        const maxDisplayed = displayedValues.length ? Math.max(...displayedValues) : 0;
+        const minDisplayed = displayedValues.length ? Math.min(...displayedValues) : 0;
 
         if (isNaN(minVal) || isNaN(minVal)) return [0, 0, 1];
-        if (!displayedValues.length) {
-            maxDisplayed = 0;
-            minDisplayed = 0;
-        }
 
         setMaxValue(maxDisplayed);
         setMinValue(minDisplayed);
@@ -44,21 +40,8 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
     useEffect(() => {
         const percent1 = ((minValue - min) / (max - min)) * 100;
         const percent2 = ((maxValue - min) / (max - min)) * 100;
-        ref.current.style.background = `linear-gradient(to right, #e5e5e5 ${percent1}% , #666666 ${percent1}% , #666666 ${percent2}%, #e5e5e5 ${percent2}%)`;
+        sliderRef.current.style.background = `linear-gradient(to right, #e5e5e5 ${percent1}% , #666666 ${percent1}% , #666666 ${percent2}%, #e5e5e5 ${percent2}%)`;
     }, [minValue, maxValue, min, max]);
-
-    useEffect(() => {
-        api.setColumnFilterModel(filter, {
-            operator: 'AND',
-            conditions: [
-                { filterType: 'number', type: 'greaterThanOrEqual', filter: Number(minValue) },
-                { filterType: 'number', type: 'lessThanOrEqual', filter: Number(maxValue) }
-            ]
-        }).then(() => {
-            api.onFilterChanged();
-            setRefresh((prev) => ({ state: prev.state, filter: filter }));
-        });
-    }, [minValue, maxValue]);
 
     const valueFormatter = (value) => {
         if (!value || !formatter) return value;
@@ -76,6 +59,7 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
 
         return new Intl.NumberFormat("en-GB", settings).format(Number(value));
     };
+
 
     const handleSlide = (value, isMin) => {
         const numValue = Number(value);
@@ -100,6 +84,7 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
             }
             return;
         }
+
         setMaxInputValue(value);
         if (!isNaN(number) && number >= minValue) {
             setMaxValue(number);
@@ -114,6 +99,7 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
             setIsMaxEditing(false);
             setMaxInputValue(valueFormatter(maxValue));
         }
+        updateFilter();
     };
 
     const handleFocus = (isMin) => {
@@ -127,7 +113,7 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
     };
 
     const handleTrackClick = (event) => {
-        const dt = (max - min) / ref.current.clientWidth;
+        const dt = (max - min) / sliderRef.current.clientWidth;
         let xStart = event.clientX;
         let minV = minValue;
         let maxV = maxValue;
@@ -157,10 +143,27 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
         const onMouseUp = () => {
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
+            updateFilter();
         };
 
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
+    };
+
+    useImperativeHandle(ref, () => ({
+        getModel: () => ({
+            min: minValue,
+            max: maxValue,
+        }),
+        doesFilterPass: (params) => {
+            const value = params.data[filter];
+            return value >= minValue && value <= maxValue;
+        },
+        isFilterActive: () => minValue !== min || maxValue !== max,
+    }));
+
+    const updateFilter = () => {
+        api.onFilterChanged();
     };
 
     return (
@@ -192,7 +195,7 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
                             id={`slider_track_${filter}`}
                             className='slider_track'
                             style={{ background: "#666666" }}
-                            ref={ref}
+                            ref={sliderRef}
                             onMouseDown={handleTrackClick}
                         />
                         <input
@@ -203,6 +206,7 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
                             value={minValue}
                             className='input_slider1'
                             onInput={(e) => handleSlide(e.target.value, true)}
+                            onMouseUp={updateFilter}
                         />
                         <input
                             type='range'
@@ -212,12 +216,13 @@ const NumberFilter = ({ api, filter, header, formatter, setRefresh }) => {
                             value={maxValue}
                             className='input_slider2'
                             onInput={(e) => handleSlide(e.target.value, false)}
+                            onMouseUp={updateFilter}
                         />
                     </div>
                 </div>
             </div>
         </div>
     );
-};
+});
 
 export default NumberFilter;

@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 
-const ColumnFilter = ({ api }) => {
+const ColumnFilter = forwardRef(({ api, filterLayout }, ref) => {
     const [searchValue, setSearchValue] = useState("");
     const [nodes, setNodes] = useState([]);
     const [filteredNodes, setFilteredNodes] = useState([]);
     const [all, setAll] = useState(true);
 
     useEffect(() => {
-        let columnNodes = api.getAllGridColumns().map(elem => ({
-            colId: elem.colId,
-            header: elem.colDef.headerName,
-            checked: elem.visible,
-        }));
+        let columnNodes = api.getAllGridColumns()
+            .filter(node => node.colId !== "columnFilter")
+            .map(elem => ({
+                colId: elem.colId,
+                header: elem.colDef.headerName,
+                checked: elem.visible,
+            }));
 
         const allChecked = columnNodes.every((col) => col.checked);
 
@@ -21,14 +23,14 @@ const ColumnFilter = ({ api }) => {
     }, [api]);
 
     const handleCheck = (e) => {
-        const updatedNodes = nodes.map((node) => {
-            String(item.header) === e.target.value
-                ? { ...node, checked: !item.checked }
+        const updatedNodes = nodes.map(node => {
+            return node.header === e.target.value
+                ? { ...node, checked: !node.checked }
                 : node
         }
         );
 
-        const allChecked = updatedNodes.every((node) => node.checked);
+        const allChecked = updatedNodes.every(node => node.checked);
 
         setAll(allChecked);
         setNodes(updatedNodes);
@@ -37,7 +39,7 @@ const ColumnFilter = ({ api }) => {
     };
 
     const handleCheckAll = (e) => {
-        let updatedNodes = nodes.map((node) => ({
+        let updatedNodes = nodes.map(node => ({
             ...node,
             checked: e.target.checked,
         }));
@@ -45,25 +47,26 @@ const ColumnFilter = ({ api }) => {
         setAll(e.target.checked);
         setFilteredNodes(updatedNodes);
         setNodes(updatedNodes);
-    }
+    };
 
     const updateFilter = () => {
         const visibleColumns = nodes.filter((node) => node.checked).map((node) => node.colId);
 
-        let columnDefs = api.getColumnDefs();
-        columnDefs.forEach((colDef) => {
-            colDef.hide = !visibleColumns.includes(colDef.field);
-        });
+        let columnDefs = api.getColumnDefs().map((colDef) => ({
+            ...colDef,
+            hide: !visibleColumns.includes(colDef.field),
+        }));
 
         api.setGridOption('columnDefs', columnDefs);
+        api.getToolPanelInstance("filters").setFilterLayout([filterLayout]);
         setSearchValue("");
-    }
+    };
 
     const resetFilter = () => {
-        const columnDefs = api.getColumnDefs()
-        columnDefs.forEach((colDef) => {
-            colDef.hide = false;
-        });
+        const columnDefs = api.getColumnDefs().map((colDef) => ({
+            ...colDef,
+            hide: colDef.colId == "columnFilter" ? true : false,
+        }));
 
         let updatedNodes = nodes.map((item) => ({
             ...item,
@@ -71,27 +74,34 @@ const ColumnFilter = ({ api }) => {
         }));
 
         api.setGridOption('columnDefs', columnDefs);
+        api.getToolPanelInstance("filters").setFilterLayout([filterLayout]);
         setAll(true);
-        setFilteredNodes(updatedNodes);
         setNodes(updatedNodes);
-    }
+        setFilteredNodes(updatedNodes);
+    };
 
     const filterNodes = (value, nodesToFilter = nodes) => {
         setSearchValue(value);
-        if (value.len == 0) {
+        if (!value) {
             return;
         }
 
         const searchRegex = new RegExp(value.toLowerCase(), "g");
         const filteredNodes = nodesToFilter.filter((node) =>
-            String(node.colId).toLowerCase().match(searchRegex)
+            node.colId.toLowerCase().match(searchRegex)
         );
 
         setFilteredNodes(filteredNodes);
-    }
+    };
+
+    useImperativeHandle(ref, () => ({
+        getModel: () => ({}),
+        doesFilterPass: () => true,
+        isFilterActive: () => false,
+    }));
 
     return (
-        <div className="filter">
+        <div className="column_filter_wrapper">
             <div className='column_filter'>
                 <div className='column_filter_wrapper'>
                     <input
@@ -135,6 +145,6 @@ const ColumnFilter = ({ api }) => {
             </div>
         </div>
     )
-};
+});
 
 export default ColumnFilter;
