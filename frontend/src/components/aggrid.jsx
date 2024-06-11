@@ -37,6 +37,20 @@ const AgGrid = ({ table }) => {
         );
     };
 
+    const getFilterItemRenderer = (params, column) => {
+        let value = params.value;
+        if (value == "(Select All)") {
+            return <div className="cell" dangerouslySetInnerHTML={{ __html: "(All)" }}></div>;
+        }
+
+        return (
+            <div
+                className="cell"
+                dangerouslySetInnerHTML={{ __html: util.format(column.strFormat, value) }}
+            />
+        );
+    };
+
     const getCellStyle = (params, column) => {
         const style = {
             color: column.color,
@@ -119,7 +133,7 @@ const AgGrid = ({ table }) => {
                 if (coldef.filter == "text") {
                     colDef.filterParams = {
                         buttons: ["reset", "apply"],
-                        cellRenderer: (params) => getCellRenderer(params, coldef),
+                        cellRenderer: (params) => getFilterItemRenderer(params, coldef),
                         searchPlaceholder: 'Search for name ...',
                     }
                 }
@@ -241,8 +255,6 @@ const AgGrid = ({ table }) => {
             if (index >= filterHeight.len) return;
             item.style.height = filterHeight.filterHeight;
         });
-
-        params.api.getColumnFilterInstance("sector").then((filter) => console.log(filter));
     };
 
     const onStateUpdated = (params) => {

@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState, forwardRef, useImperativeHandle } from "react";
 
-const NumberFilter = forwardRef(({ column, api, formatter}, ref) => {
+const NumberFilter = forwardRef(({ column, api, formatter }, ref) => {
     const [minValue, setMinValue] = useState(0);
     const [maxValue, setMaxValue] = useState(0);
     const [isMinEditing, setIsMinEditing] = useState(false);
     const [isMaxEditing, setIsMaxEditing] = useState(false);
     const [minInputValue, setMinInputValue] = useState("0");
     const [maxInputValue, setMaxInputValue] = useState("0");
+    const [isSlide, setIsSlide] = useState(false);
     const sliderRef = useRef(null);
     const filter = column.colId;
     const header = column.userProvidedColDef.headerName;
@@ -42,6 +43,15 @@ const NumberFilter = forwardRef(({ column, api, formatter}, ref) => {
         const percent2 = ((maxValue - min) / (max - min)) * 100;
         sliderRef.current.style.background = `linear-gradient(to right, #e5e5e5 ${percent1}% , #666666 ${percent1}% , #666666 ${percent2}%, #e5e5e5 ${percent2}%)`;
     }, [minValue, maxValue, min, max]);
+
+    useEffect(() => {
+        const handleMouseUp = () => {
+            isSlide && updateFilter();
+            setIsSlide(false);
+        };
+
+        document.addEventListener("mouseup", handleMouseUp);
+    }, [isSlide]);
 
     const valueFormatter = (value) => {
         if (!value || !formatter) return value;
@@ -162,6 +172,7 @@ const NumberFilter = forwardRef(({ column, api, formatter}, ref) => {
         isFilterActive: () => minValue !== min || maxValue !== max,
     }));
 
+
     const updateFilter = () => {
         api.onFilterChanged();
     };
@@ -206,7 +217,7 @@ const NumberFilter = forwardRef(({ column, api, formatter}, ref) => {
                             value={minValue}
                             className='input_slider1'
                             onInput={(e) => handleSlide(e.target.value, true)}
-                            onMouseUp={updateFilter}
+                            onMouseDown={() => setIsSlide(true)}
                         />
                         <input
                             type='range'
@@ -216,7 +227,7 @@ const NumberFilter = forwardRef(({ column, api, formatter}, ref) => {
                             value={maxValue}
                             className='input_slider2'
                             onInput={(e) => handleSlide(e.target.value, false)}
-                            onMouseUp={updateFilter}
+                            onMouseDown={() => setIsSlide(true)}
                         />
                     </div>
                 </div>

@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState, forwardRef, useImperativeHandle } from "react";
-import { 
-    displayDateString, 
-    displayDateTimeString, 
-    displayTimeString, 
-    extractTimeInMilliseconds, 
+import {
+    displayDateString,
+    displayDateTimeString,
+    displayTimeString,
+    extractTimeInMilliseconds,
     parseDateTimeValue,
 } from "../utils.ts";
 
-const DateFilter = forwardRef(({ column, api, formatter },  ref) => {
+const DateFilter = forwardRef(({ column, api, formatter }, ref) => {
     const [inputMin, setInputMin] = useState(0);
     const [inputMax, setInputMax] = useState(0);
     const [minValue, setMinValue] = useState(0);
