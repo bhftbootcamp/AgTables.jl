@@ -46,6 +46,7 @@
 
 .ag-react-container {
     width: 100%;
+    height: 100%;
     overflow: hidden;
 }
 
@@ -257,6 +258,10 @@
 
 .ag-filter-body-wrapper.ag-set-filter-body-wrapper {
     height: calc(100% - 31px);
+}
+
+.ag-set-filter-list {
+    height: calc(100% - 21px);
 }
 
 .ag-group-container.ag-group-container-vertical.ag-filter-toolpanel-group-container {

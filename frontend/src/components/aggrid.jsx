@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, forwardRef, useRef, useEffect } from "react";
+import React, { useCallback, useMemo, useState, forwardRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import * as util from 'util';
 import "ag-grid-community/styles/ag-grid.css";
@@ -13,21 +13,21 @@ import ColumnFilter from "./custom_filters/column_filter.jsx";
 const AgGrid = ({ table }) => {
     const [filters, setFilters] = useState(false);
     const [filterLayout, setFilterLayout] = useState(null);
+    const [filterHeight, setFilterHeight] = useState(null);
     const initialState = JSON.parse(localStorage.getItem(table.uuidKey));
     const initialWidth = localStorage.getItem(table.uuidKey + "width");
 
     const getCellRenderer = (params, column) => {
         let value = params.value;
-
         if (value == "(Select All)") {
             return <div className="cell" dangerouslySetInnerHTML={{ __html: "(All)" }}></div>;
         }
-
         if (column.formatterType === "number") {
             value = formatNumber(value, column.formatter);
         } else if (column.formatterType === "date") {
             value = formatDate(value, column.formatter);
         }
+
         return (
             <div
                 className="cell"
@@ -43,11 +43,9 @@ const AgGrid = ({ table }) => {
             background: column.cellBackground,
             justifyContent: column.textAlign,
         };
-
         if (column.threshold) {
             style.color = params.value >= column.threshold.value ? column.threshold.colorUp : column.threshold.colorDown;
         }
-
         if (column.colorMap) {
             Object.entries(column.colorMap).forEach(([value, color]) => {
                 if (params.value === value) style.color = color;
@@ -62,12 +60,24 @@ const AgGrid = ({ table }) => {
             case "text":
                 return "agSetColumnFilter";
             case "number":
-                return forwardRef(({ column, api }, ref) => <NumberFilter column={column} api={api} formatter={coldef.formatter} ref={ref} />);
+                return forwardRef(({ column, api }, ref) => (
+                    <NumberFilter column={column} api={api} formatter={coldef.formatter} ref={ref} />
+                ));
             case "date":
-                return forwardRef(({ column, api }, ref) => <DateFilter column={column} api={api} formatter={coldef.formatter} ref={ref} />);
+                return forwardRef(({ column, api }, ref) => (
+                    <DateFilter column={column} api={api} formatter={coldef.formatter} ref={ref} />
+                ));
             default:
                 return undefined;
         }
+    };
+
+    const getFilterHeight = () => {
+        const fields = table.columnDefs.filter(coldef => coldef.filter === "text").map(coldef => coldef.fieldName);
+        const otherFilterCount = table.columnDefs.filter(coldef => coldef.filter === "number" || coldef.filter === "date").length;
+        let setFilterCount = fields.length + (table.columnFilter ? 1 : 0);
+        const filterHeight = `calc((100% - ${otherFilterCount} * 70px) / ${setFilterCount})`;
+        return { len: setFilterCount, filterHeight };
     };
 
     const generateFilterLayout = () => {
@@ -110,6 +120,7 @@ const AgGrid = ({ table }) => {
                     colDef.filterParams = {
                         buttons: ["reset", "apply"],
                         cellRenderer: (params) => getCellRenderer(params, coldef),
+                        searchPlaceholder: 'Search for name ...',
                     }
                 }
             }
@@ -121,13 +132,15 @@ const AgGrid = ({ table }) => {
             colDefs.push({
                 field: "columnFilter",
                 hide: true,
-                filter: forwardRef(({ api }, ref) => <ColumnFilter api={api} filterLayout={filterLayout} ref={ref} />),
+                filter: forwardRef(({ api }, ref) => <ColumnFilter api={api} filterLayout={filterLayout} filterHeight={filterHeight} ref={ref} />),
             });
         };
 
         const filterLayout = generateFilterLayout();
+        const filterHeight = getFilterHeight();
         setFilterLayout(filterLayout);
-        setFilters(colDefs.some((colDef) => colDef.filter) || table.columnFilter);
+        setFilterHeight(filterHeight);
+        setFilters(colDefs.some(colDef => colDef.filter) || table.columnFilter);
 
         return colDefs;
     }, [table]);
@@ -222,6 +235,14 @@ const AgGrid = ({ table }) => {
         const filtersToolPanel = params.api.getToolPanelInstance("filters");
         filtersToolPanel.expandFilters();
         filterLayout && filtersToolPanel.setFilterLayout([filterLayout]);
+
+        let filtersList = document.getElementsByClassName("ag-filter-toolpanel-instance");
+        Array.from(filtersList).forEach((item, index) => {
+            if (index >= filterHeight.len) return;
+            item.style.height = filterHeight.filterHeight;
+        });
+
+        params.api.getColumnFilterInstance("sector").then((filter) => console.log(filter));
     };
 
     const onStateUpdated = (params) => {

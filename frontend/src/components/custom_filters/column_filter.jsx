@@ -1,6 +1,6 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 
-const ColumnFilter = forwardRef(({ api, filterLayout }, ref) => {
+const ColumnFilter = forwardRef(({ api, filterLayout, filterHeight }, ref) => {
     const [searchValue, setSearchValue] = useState("");
     const [nodes, setNodes] = useState([]);
     const [filteredNodes, setFilteredNodes] = useState([]);
@@ -58,7 +58,7 @@ const ColumnFilter = forwardRef(({ api, filterLayout }, ref) => {
         }));
 
         api.setGridOption('columnDefs', columnDefs);
-        api.getToolPanelInstance("filters").setFilterLayout([filterLayout]);
+        restoreHeight();
         setSearchValue("");
     };
 
@@ -74,7 +74,7 @@ const ColumnFilter = forwardRef(({ api, filterLayout }, ref) => {
         }));
 
         api.setGridOption('columnDefs', columnDefs);
-        api.getToolPanelInstance("filters").setFilterLayout([filterLayout]);
+        restoreHeight()
         setAll(true);
         setNodes(updatedNodes);
         setFilteredNodes(updatedNodes);
@@ -82,9 +82,6 @@ const ColumnFilter = forwardRef(({ api, filterLayout }, ref) => {
 
     const filterNodes = (value, nodesToFilter = nodes) => {
         setSearchValue(value);
-        if (!value) {
-            return;
-        }
 
         const searchRegex = new RegExp(value.toLowerCase(), "g");
         const filteredNodes = nodesToFilter.filter((node) =>
@@ -99,6 +96,16 @@ const ColumnFilter = forwardRef(({ api, filterLayout }, ref) => {
         doesFilterPass: () => true,
         isFilterActive: () => false,
     }));
+
+    const restoreHeight = () => {
+        api.getToolPanelInstance("filters").setFilterLayout([filterLayout]);
+
+        let filtersList = document.getElementsByClassName("ag-filter-toolpanel-instance");
+        Array.from(filtersList).forEach((item, index) => {
+            if (index >= filterHeight.len) return;
+            item.style.height = filterHeight.filterHeight;
+        });
+    }
 
     return (
         <div className="column_filter_wrapper">

@@ -62,8 +62,9 @@ body {
     padding: 0;
     margin-bottom: 5px;
 
+    font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 400;
     color: #808080;
 
     border: none;
