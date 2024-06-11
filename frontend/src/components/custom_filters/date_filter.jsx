@@ -66,11 +66,11 @@ const DateFilter = forwardRef(({ column, api, formatter }, ref) => {
         };
 
         document.addEventListener("mouseup", handleMouseUp);
+
         return () => {
             document.removeEventListener("mouseup", handleMouseUp);
         };
     }, [isSlide]);
-
 
     const [dateFormatter, patern] = useMemo(() => {
         switch (formatter) {
@@ -106,7 +106,6 @@ const DateFilter = forwardRef(({ column, api, formatter }, ref) => {
             isMin ? setInputMin(dateFormatter(minValue)) : setInputMax(dateFormatter(maxValue));
         }
     };
-
 
     const clickTrack = (event) => {
         let dt = (max - min) / sliderRef.current.clientWidth;

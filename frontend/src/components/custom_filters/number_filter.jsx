@@ -53,6 +53,7 @@ const NumberFilter = forwardRef(({ column, api, formatter }, ref) => {
         };
 
         document.addEventListener("mouseup", handleMouseUp);
+
         return () => {
             document.removeEventListener("mouseup", handleMouseUp);
         };
@@ -75,7 +76,6 @@ const NumberFilter = forwardRef(({ column, api, formatter }, ref) => {
         return new Intl.NumberFormat("en-GB", settings).format(Number(value));
     };
 
-
     const handleSlide = (value, isMin) => {
         const numValue = Number(value);
         if (isMin) {
@@ -92,6 +92,7 @@ const NumberFilter = forwardRef(({ column, api, formatter }, ref) => {
     const handleInputChange = (event, isMin) => {
         const value = event.target.value;
         const number = Number(value);
+
         if (isMin) {
             setMinInputValue(value);
             if (!isNaN(number) && number <= maxValue) {
@@ -101,6 +102,7 @@ const NumberFilter = forwardRef(({ column, api, formatter }, ref) => {
         }
 
         setMaxInputValue(value);
+
         if (!isNaN(number) && number >= minValue) {
             setMaxValue(number);
         }

@@ -20,9 +20,11 @@ const AgGrid = ({ table }) => {
 
     const getCellRenderer = (params, column) => {
         let value = params.value;
+
         if (value == "(Select All)") {
             return <div className="cell" dangerouslySetInnerHTML={{ __html: "(All)" }}></div>;
         }
+
         if (column.formatterType === "number") {
             value = formatNumber(value, column.formatter);
         } else if (column.formatterType === "date") {
@@ -40,6 +42,7 @@ const AgGrid = ({ table }) => {
 
     const getFilterItemRenderer = (params, column) => {
         let value = params.value;
+
         if (value == "(Select All)") {
             return <div className="cell" dangerouslySetInnerHTML={{ __html: "(All)" }}></div>;
         }
@@ -58,9 +61,11 @@ const AgGrid = ({ table }) => {
             background: column.cellBackground,
             justifyContent: column.textAlign,
         };
+
         if (column.threshold) {
             style.color = params.value >= column.threshold.value ? column.threshold.colorUp : column.threshold.colorDown;
         }
+
         if (column.colorMap) {
             Object.entries(column.colorMap).forEach(([value, color]) => {
                 if (params.value === value) style.color = color;
