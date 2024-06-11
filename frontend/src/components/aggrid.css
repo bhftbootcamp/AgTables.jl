@@ -247,10 +247,11 @@ button[class^=ag-]:focus {
 
 .ag-theme-quartz .ag-ltr .ag-filter-toolpanel-instance-filter {
     margin: 5px 10px;
+    margin-top: 2px;
 }
 
 .ag-filter-toolpanel-instance-filter {
-    height: calc(100% - 10px);
+    height: calc(100% - 6px);
 }
 
 .ag-filter-body-wrapper.ag-set-filter-body-wrapper {
