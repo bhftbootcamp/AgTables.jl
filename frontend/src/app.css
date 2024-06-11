@@ -14,7 +14,7 @@ body {
     *,
     :after,
     :before {
-        box-sizing: border-box
+        box-sizing: border-box;
     }
 }
 
@@ -29,8 +29,12 @@ body {
 
 .filter {
     width: 100%;
+    height: 62px;
+}
+
+.column_filter_wrapper {
+    width: 100%;
     height: 100%;
-    border-bottom: 1px solid #e0e0e0;
 }
 
 .column_filter {
@@ -44,7 +48,6 @@ body {
     align-items: stretch;
 
     overflow: hidden;
-    padding: 2px 10px 5px 10px;
 }
 
 .filter_wrapper .column_filter:not(:first-child) {
@@ -54,16 +57,20 @@ body {
 .searcher {
     text-align: start;
     width: 100%;
-    min-height: 18px;
-    margin: 0px;
+    min-height: 20px;
+    margin: 0;
     padding: 0;
-    margin-bottom: 5px;
 
+    font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif;
+    font-feature-settings: "tnum", "lnum";
     font-size: 13px;
-    font-weight: 500;
-    color: #808080;
+    font-style: normal;
+    font-variant-caps: normal;
+    font-weight: 400;
+    color: inherit;
 
     border: none;
+    border-radius: 4px;
 
     cursor: pointer;
     white-space: nowrap;
@@ -111,6 +118,10 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-left: 10px;
+
+    font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 input[type='checkbox']:checked,
@@ -120,6 +131,7 @@ input[type='checkbox']:not(:checked) {
     cursor: pointer;
     opacity: 1;
     width: 1px;
+    height: 13px;
     margin-right: 15px;
 }
 
@@ -202,23 +214,21 @@ input[type='text'] {
     height: 100%;
     position: relative;
     text-align: start;
-
-    padding: 2px 10px 5px 10px;
 }
 
 .date_filter {
     position: relative;
     text-align: start;
-
-    padding: 2px 10px 5px 10px;
 }
 
 .name_filter {
     font-size: 13px;
     font-weight: 500;
     text-align: start;
-
     color: #3e3d3d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .container {
@@ -237,6 +247,7 @@ input[type='range'] {
 
     position: absolute;
     margin: 0;
+    padding: 0 5px;
     top: 3px;
     bottom: 0;
 
@@ -245,12 +256,12 @@ input[type='range'] {
 }
 
 .slider_track {
-    width: calc(100% - 12px);
+    width: calc(100% - 18px);
     height: 4px;
 
     position: absolute;
     margin: 0;
-    left: 6px;
+    left: 9px;
     top: 5.5px;
     bottom: 0;
 
@@ -258,6 +269,14 @@ input[type='range'] {
     border-radius: 3px;
 
     cursor: pointer;
+}
+
+.input_slider1 {
+    left: -4px;
+}
+
+.input_slider2 {
+    right: -5px;
 }
 
 input[type='range']::-webkit-slider-runnable-track {
@@ -330,7 +349,7 @@ input[type='range']::-ms-track {
     margin: 0;
 
     color: #383838;
-    font-weight: 500;
+    font-weight: 400;
     font-size: 13px;
 }
 
@@ -376,4 +395,24 @@ input[type='range']::-ms-track {
 .label_cell {
     display: inline;
     vertical-align: middle;
+}
+
+
+.filter .slider_track {
+    position: relative;
+}
+
+.filter .slider_click_area {
+    position: absolute;
+    width: 100%;
+    height: 15px;
+    top: 0px;
+    background: transparent;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.filter .input_slider1,
+.filter .input_slider2 {
+    z-index: 3;
 }

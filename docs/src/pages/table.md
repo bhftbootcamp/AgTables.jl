@@ -68,15 +68,18 @@ table = ag_table(
         field_name = "destination",
         header_name = "Destination",
         filter = true,
+        filter_exclude = ["Guatemala City", "Boston, MA"],
     ),
     AgStringColumnDef(
         field_name = "status",
         header_name = "Status",
         filter = true,
         rect_background = "#f0efeb",
-        equals = ["In Air"],
-        equals_color = "#8ac926",
-        threshold = AGThreshold("In Air", color_up = "#999999", color_down = "#ff595e"),
+        color_map = Dict(
+            "In Air" => "#8ac926",
+            "Canceled" => "#ff595e",
+            "Scheduled" => "#999999",
+        ),
         text_align = AG_CENTER,
     ),
 )
@@ -111,6 +114,7 @@ table = ag_table(
         filter = true,
         text_align = AG_CENTER,
         rect_background = "#f0efeb",
+        default_sort = AG_ASC,
     ),
     AgNumberColumnDef(
         field_name = "exchange_rate",
@@ -183,6 +187,7 @@ table = ag_table(
     AgStringColumnDef(field_name = "executedQty", visible = false),
     AgStringColumnDef(field_name = "price", visible = false);
     column_filter = true,
+    header_height = 60,
 )
 
 ag_save("time_example.html", table)

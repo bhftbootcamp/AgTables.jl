@@ -25,4 +25,9 @@
         @test Serde.SerJson.ser_type(AbstractColumnDef, AG_CENTER) == "center"
         @test Serde.SerJson.ser_type(AbstractColumnDef, AG_RIGHT) == "right"
     end
+
+    @testset "Case №1: Sort" begin
+        @test Serde.SerJson.ser_type(AbstractColumnDef, AG_ASC) == "asc"
+        @test Serde.SerJson.ser_type(AbstractColumnDef, AG_DESC) == "desc"
+    end
 end

@@ -1,171 +1,272 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, forwardRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import FilterPanel from "./tool_panel/filter_panel.jsx";
 import * as util from 'util';
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
 import "./aggrid.css";
 import { displayDateString, displayDateTimeString, displayTimeString, extractTimeInMilliseconds } from "./utils.ts";
+import NumberFilter from "./custom_filters/number_filter.jsx";
+import DateFilter from "./custom_filters/date_filter.jsx";
+import ColumnFilter from "./custom_filters/column_filter.jsx";
 
 const AgGrid = ({ table }) => {
-    const [filters, setFilters] = useState(null);
-    const initialWidth = localStorage.getItem(table.uuidKey);
+    const [filters, setFilters] = useState(false);
+    const [filterLayout, setFilterLayout] = useState(null);
+    const [filterHeight, setFilterHeight] = useState(null);
 
-    const columnDefs = useMemo(() => {
-        let coldef = [];
-        let colsFilters = { text: [], number: [], date: [] };
-        let isFilters = false;
-        table.columnDefs.map((column) => {
-            let cols = { field: column.fieldName };
-            cols.headerName = column.headerName;
-            cols.initialHide = !column.visible;
-            switch (column.filter) {
-                case "text":
-                    cols.filter = "agSetColumnFilter";
-                    colsFilters.text.push({ name: column.fieldName, header: column.headerName });
-                    isFilters = true;
-                    break;
-                case "number":
-                    cols.filter = "agNumberColumnFilter";
-                    colsFilters.number.push({ name: column.fieldName, formatter: column.formatter, header: column.headerName });
-                    isFilters = true;
-                    break;
-                case "date":
-                    cols.filter = "agNumberColumnFilter";
-                    colsFilters.date.push({ name: column.fieldName, formatter: column.formatter, header: column.headerName });
-                    isFilters = true;
-                    break;
-            }
+    const initialState = JSON.parse(localStorage.getItem(table.uuidKey));
+    const initialWidth = localStorage.getItem(table.uuidKey + "width");
 
-            if (column.formatterType == "number") {
-                cols.cellRenderer = (params) => {
-                    let value = valueFormatter(
-                        params,
-                        column.formatter.style,
-                        column.formatter.currency,
-                        column.formatter.minimumFractionDigits,
-                        column.formatter.maximumFractionDigits,
-                        column.formatter.short,
-                        column.formatter.separator
-                    )
+    const getCellRenderer = (params, column) => {
+        let value = params.value;
 
-                    return cellRenderer(value, column.rectBackground, column.strFormat);
-                }
-            } else if (column.formatterType == "date") {
-                switch (column.formatter) {
-                    case "datetime":
-                        cols.cellRenderer = (params) => cellRenderer(displayDateTimeString(params.value), column.rectBackground, column.strFormat);
-                        break;
-                    case "date":
-                        cols.cellRenderer = (params) => cellRenderer(displayDateString(params.value), column.rectBackground, column.strFormat);
-                        break;
-                    case "time":
-                        cols.cellRenderer = (params) => cellRenderer(displayTimeString(params.value), column.rectBackground, column.strFormat);
-                        cols.filterValueGetter = (params) => extractTimeInMilliseconds(params.data[column.fieldName]);
-                        break;
-                }
-            } else {
-                cols.cellRenderer = (params) => cellRenderer(params.value, column.rectBackground, column.strFormat);
-            }
+        if (value == "(Select All)") {
+            return <div className="cell" dangerouslySetInnerHTML={{ __html: "(All)" }}></div>;
+        }
 
-            cols.cellStyle = (params) => {
-                let style = {
-                    color: column.color,
-                    background: column.cellBackground,
-                    justifyContent: column.textAlign
-                };
+        if (column.formatterType === "number") {
+            value = formatNumber(value, column.formatter);
+        } else if (column.formatterType === "date") {
+            value = formatDate(value, column.formatter);
+        }
 
-                if (column.threshold)
-                    style.color = params.value >= column.threshold.value ? column.threshold.colorUp : column.threshold.colorDown;
+        return (
+            <div
+                className="cell"
+                style={{ backgroundColor: column.rectBackground }}
+                dangerouslySetInnerHTML={{ __html: util.format(column.strFormat, value) }}
+            />
+        );
+    };
 
-                if (column.equals.includes(params.value)) {
-                    style.color = column.equalsColor;
-                }
+    const getFilterItemRenderer = (params, column) => {
+        let value = params.value;
 
-                return style;
-            };
+        if (value == "(Select All)") {
+            return <div className="cell" dangerouslySetInnerHTML={{ __html: "(All)" }}></div>;
+        }
 
-            if (table.columnFilter) colsFilters.cols = true;
-            if (table.columnFilter || isFilters) setFilters(colsFilters);
-            if (column.width) cols.width = column.width;
-            else cols.flex = 1;
-            cols.autoHeight = true;
-            coldef.push(cols);
+        return (
+            <div
+                className="cell"
+                dangerouslySetInnerHTML={{ __html: util.format(column.strFormat, value) }}
+            />
+        );
+    };
+
+    const getCellStyle = (params, column) => {
+        const style = {
+            color: column.color,
+            background: column.cellBackground,
+            justifyContent: column.textAlign,
+        };
+
+        if (column.threshold) {
+            style.color = params.value >= column.threshold.value ? column.threshold.colorUp : column.threshold.colorDown;
+        }
+
+        if (column.colorMap) {
+            Object.entries(column.colorMap).forEach(([value, color]) => {
+                if (params.value === value) style.color = color;
+            });
+        }
+
+        return style;
+    };
+
+    const getFilterComponent = (coldef) => {
+        switch (coldef.filter) {
+            case "text":
+                return "agSetColumnFilter";
+            case "number":
+                return forwardRef(({ column, api }, ref) => (
+                    <NumberFilter column={column} api={api} formatter={coldef.formatter} ref={ref} />
+                ));
+            case "date":
+                return forwardRef(({ column, api }, ref) => (
+                    <DateFilter column={column} api={api} formatter={coldef.formatter} ref={ref} />
+                ));
+            default:
+                return undefined;
+        }
+    };
+
+    const getFilterHeight = () => {
+        const fields = table.columnDefs.filter(coldef => coldef.filter === "text").map(coldef => coldef.fieldName);
+        const otherFilterCount = table.columnDefs.filter(coldef => coldef.filter === "number" || coldef.filter === "date").length;
+        let setFilterCount = fields.length + (table.columnFilter ? 1 : 0);
+        const filterHeight = `calc((100% - ${otherFilterCount} * 70px) / ${setFilterCount})`;
+        return { len: setFilterCount, filterHeight };
+    };
+
+    const generateFilterLayout = () => {
+        const filtersType = { text: [], number: [], date: [] };
+        table.columnDefs.forEach(coldef => {
+            if (coldef.filter) filtersType[coldef.filter].push(coldef.fieldName);
         });
 
-        return coldef;
-    }, []);
+        const filterLayout = { children: [] };
+        filtersType.text.forEach(filter => filterLayout.children.push({ field: filter }));
+        if (table.columnFilter) filterLayout.children.push({ field: "columnFilter" });
+        filtersType.number.forEach(filter => filterLayout.children.push({ field: filter }));
+        filtersType.date.forEach(filter => filterLayout.children.push({ field: filter }));
 
-    const defaultColDef = useMemo(() => {
-        return {
-            editable: false,
-            sortable: true,
-            resizable: table.resize,
-            filter: true,
-            minWidth: 20,
-        }
-    }, []);
+        return filterLayout;
+    };
 
-    const cellRenderer = (value, background, strFormat) => {
-        return <div className="cell" style={{ backgroundColor: background }} dangerouslySetInnerHTML={{ __html: util.format(strFormat, value) }} />;
-    }
+    const columnDefs = useMemo(() => {
+        const colDefs = table.columnDefs.map((coldef) => {
+            const colDef = {
+                field: coldef.fieldName,
+                headerName: coldef.headerName,
+                initialHide: !coldef.visible,
+                cellRenderer: (params) => getCellRenderer(params, coldef),
+                cellStyle: (params) => getCellStyle(params, coldef),
+                width: coldef.width,
+                flex: !coldef.width && table.flex && 1,
+                initialSort: coldef.defaultSort,
+                autoHeight: true,
+                filter: false,
+            };
 
-    const sideBar = useMemo(() => {
-        if (filters)
-            return {
-                toolPanels: [
-                    {
-                        id: 'customStats',
-                        labelDefault: 'Custom Stats',
-                        labelKey: 'customStats',
-                        iconKey: 'custom-stats',
-                        toolPanel: api => FilterPanel(api, filters, table.uuidKey),
-                        toolPanelParams: {
-                            title: 'Filters',
-                            filters: filters,
-                            uuidKey: table.uuidKey
-                        },
-                        width: parseInt(initialWidth),
-                    },
-                ],
-                defaultToolPanel: 'customStats',
+            if (coldef.filter) {
+                if (coldef.formatterType == "date" && coldef.formatter == "time") {
+                    colDef.filterValueGetter = (params) => extractTimeInMilliseconds(params.data[coldef.fieldName]);
+                }
+
+                colDef.filter = getFilterComponent(coldef);
+                if (coldef.filter == "text") {
+                    colDef.filterParams = {
+                        buttons: ["reset", "apply"],
+                        cellRenderer: (params) => getFilterItemRenderer(params, coldef),
+                        searchPlaceholder: 'Search for name ...',
+                    }
+                }
             }
-    }, [filters]);
 
-    const valueFormatter = (
-        params,
-        style,
-        currency,
-        mindigits,
-        maxdigits,
-        short,
-        separator
-    ) => {
-        if (
-            params.value === null ||
-            params.value === NaN ||
-            isNaN(Number(params.value))
-        )
-            return params.value;
+            return colDef;
+        });
 
-        let settings = {};
+        if (table.columnFilter) {
+            colDefs.push({
+                field: "columnFilter",
+                hide: true,
+                filter: forwardRef(({ api }, ref) => <ColumnFilter api={api} filterLayout={filterLayout} filterHeight={filterHeight} ref={ref} />),
+            });
+        };
 
-        if (short) {
-            settings["notation"] = "compact";
-            settings["compactDisplay"] = "short";
+        const filterLayout = generateFilterLayout();
+        const filterHeight = getFilterHeight();
+        setFilterLayout(filterLayout);
+        setFilterHeight(filterHeight);
+        setFilters(colDefs.some(colDef => colDef.filter) || table.columnFilter);
+
+        return colDefs;
+    }, [table]);
+
+    const defaultColDef = useMemo(() => ({
+        editable: false,
+        sortable: true,
+        resizable: table.resize,
+        filter: true,
+        minWidth: 20,
+    }), [table]);
+
+    const sideBar = useMemo(() => ({
+        toolPanels: [
+            {
+                id: 'filters',
+                labelDefault: 'Filters',
+                labelKey: 'filters',
+                iconKey: 'filter',
+                toolPanel: 'agFiltersToolPanel',
+                toolPanelParams: {
+                    expandFilters: true,
+                    suppressExpandAll: false,
+                    suppressFilterSearch: false,
+                    suppressSyncLayoutWithGrid: true,
+                    suppressFiltersToolPanel: true
+                },
+                width: initialWidth ? parseInt(initialWidth) : 223,
+            },
+        ],
+        defaultToolPanel: 'filters',
+    }), [initialWidth]);
+
+    const formatNumber = (value, formatter) => {
+        if (isNaN(Number(value))) return value;
+        const settings = {
+            useGrouping: formatter.separator,
+            style: formatter.style,
+            currencyDisplay: "narrowSymbol",
+            minimumFractionDigits: formatter.minimumFractionDigits,
+            maximumFractionDigits: formatter.maximumFractionDigits,
+        };
+
+        if (formatter.short) {
+            settings.notation = "compact";
+            settings.compactDisplay = "short";
         }
+        if (formatter.currency) settings.currency = formatter.currency;
 
-        settings["useGrouping"] = separator;
-        settings["style"] = style;
-        settings["currencyDisplay"] = "narrowSymbol";
-        settings["minimumFractionDigits"] = mindigits;
-        settings["maximumFractionDigits"] = maxdigits;
+        return new Intl.NumberFormat("en-GB", settings).format(Number(value));
+    };
 
-        if (currency) settings["currency"] = currency;
+    const formatDate = (value, formatter) => {
+        switch (formatter) {
+            case "datetime":
+                return displayDateTimeString(value);
+            case "date":
+                return displayDateString(value);
+            case "time":
+                return displayTimeString(value);
+            default:
+                return value;
+        }
+    };
 
-        let formatter = new Intl.NumberFormat("en-GB", settings);
-        return formatter.format(Number(params.value));
+    const onFirstDataRendered = useCallback((params) => {
+        if (initialState) return;
+
+        table.columnDefs.map((column) => {
+            if (column.filterInclude && column.filterInclude.length) {
+                applyFilter(params, column.fieldName, column.filterInclude.filter(value => !column.filterExclude.includes(value)));
+            } else if (column.filterExclude && column.filterExclude.length) {
+                let uniqueValues = {};
+                params.api.forEachNode(elem => {
+                    const value = elem.data[column.fieldName];
+                    uniqueValues[value] = elem.displayed || uniqueValues[value];
+                });
+                const filteredValues = Object.keys(uniqueValues).filter(value => uniqueValues[value]);
+                applyFilter(params, column.fieldName, filteredValues.filter(value => !column.filterExclude.includes(value)));
+            }
+        });
+    }, [table]);
+
+    const applyFilter = (params, colId, values) => {
+        params.api.setColumnFilterModel(colId, { type: 'set', values: values, })
+            .then(() => params.api.onFilterChanged());
+    };
+
+    const handleGridReady = (params) => {
+        if (!filters) return;
+
+        const filtersToolPanel = params.api.getToolPanelInstance("filters");
+        filtersToolPanel.expandFilters();
+        filterLayout && filtersToolPanel.setFilterLayout([filterLayout]);
+
+        let filtersList = document.getElementsByClassName("ag-filter-toolpanel-instance");
+        Array.from(filtersList).forEach((item, index) => {
+            if (index >= filterHeight.len) return;
+            item.style.height = filterHeight.filterHeight;
+        });
+    };
+
+    const onStateUpdated = (params) => {
+        localStorage.setItem(table.uuidKey, JSON.stringify(params.state));
+        const filtersToolPanel = params.api.getToolPanelInstance("filters");
+        filtersToolPanel && localStorage.setItem(table.uuidKey + "width", filtersToolPanel.eGui.clientWidth);
     };
 
     return (
@@ -174,7 +275,14 @@ const AgGrid = ({ table }) => {
                 rowData={table.rowData}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}
-                sideBar={sideBar}
+                sideBar={filters && sideBar}
+                initialState={initialState}
+                headerHeight={table.headerHeight}
+                rowHeight={table.rowHeight}
+                multiSortKey={"ctrl"}
+                onGridReady={handleGridReady}
+                onFirstDataRendered={onFirstDataRendered}
+                onStateUpdated={onStateUpdated}
             />
         </div>
     );
