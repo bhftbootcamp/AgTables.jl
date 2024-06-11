@@ -46,11 +46,16 @@ const NumberFilter = forwardRef(({ column, api, formatter }, ref) => {
 
     useEffect(() => {
         const handleMouseUp = () => {
-            isSlide && updateFilter();
-            setIsSlide(false);
+            if (isSlide) {
+                updateFilter();
+                setIsSlide(false);
+            }
         };
 
         document.addEventListener("mouseup", handleMouseUp);
+        return () => {
+            document.removeEventListener("mouseup", handleMouseUp);
+        };
     }, [isSlide]);
 
     const valueFormatter = (value) => {
@@ -209,6 +214,7 @@ const NumberFilter = forwardRef(({ column, api, formatter }, ref) => {
                             ref={sliderRef}
                             onMouseDown={handleTrackClick}
                         />
+                        <div className='slider_click_area' onMouseDown={handleTrackClick}></div>
                         <input
                             type='range'
                             min={min}

@@ -14,6 +14,7 @@ const AgGrid = ({ table }) => {
     const [filters, setFilters] = useState(false);
     const [filterLayout, setFilterLayout] = useState(null);
     const [filterHeight, setFilterHeight] = useState(null);
+
     const initialState = JSON.parse(localStorage.getItem(table.uuidKey));
     const initialWidth = localStorage.getItem(table.uuidKey + "width");
 
@@ -260,7 +261,7 @@ const AgGrid = ({ table }) => {
     const onStateUpdated = (params) => {
         localStorage.setItem(table.uuidKey, JSON.stringify(params.state));
         const filtersToolPanel = params.api.getToolPanelInstance("filters");
-        localStorage.setItem(table.uuidKey + "width", filtersToolPanel.eGui.clientWidth);
+        filtersToolPanel && localStorage.setItem(table.uuidKey + "width", filtersToolPanel.eGui.clientWidth);
     };
 
     return (

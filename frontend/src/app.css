@@ -29,8 +29,7 @@ body {
 
 .filter {
     width: 100%;
-    height: 60px;
-    margin-top: -3px;
+    height: 62px;
 }
 
 .column_filter_wrapper {
@@ -396,4 +395,24 @@ input[type='range']::-ms-track {
 .label_cell {
     display: inline;
     vertical-align: middle;
+}
+
+
+.filter .slider_track {
+    position: relative;
+}
+
+.filter .slider_click_area {
+    position: absolute;
+    width: 100%;
+    height: 15px;
+    top: 0px;
+    background: transparent;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.filter .input_slider1,
+.filter .input_slider2 {
+    z-index: 3;
 }

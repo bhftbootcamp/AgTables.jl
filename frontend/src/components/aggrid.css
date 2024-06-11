@@ -236,7 +236,9 @@
 }
 
 input[class^=ag-][type=text]:focus,
-button[class^=ag-]:focus {
+button[class^=ag-]:focus,
+.ag-checkbox-input-wrapper:focus-within, 
+.ag-checkbox-input-wrapper:active {
     box-shadow: none;
     border: none;
 }

@@ -12,6 +12,7 @@ const DateFilter = forwardRef(({ column, api, formatter }, ref) => {
     const [inputMax, setInputMax] = useState(0);
     const [minValue, setMinValue] = useState(0);
     const [maxValue, setMaxValue] = useState(0);
+    const [isSlide, setIsSlide] = useState(false);
     const filter = column.colId;
     const header = column.userProvidedColDef.headerName;
     const sliderRef = useRef(null);
@@ -56,6 +57,20 @@ const DateFilter = forwardRef(({ column, api, formatter }, ref) => {
         sliderRef.current.style.background = `linear-gradient(to right, #e5e5e5 ${percent1}% , #666666 ${percent1}% , #666666 ${percent2}%, #e5e5e5 ${percent2}%)`;
     }, [minValue, maxValue, min, max]);
 
+    useEffect(() => {
+        const handleMouseUp = () => {
+            if (isSlide) {
+                updateFilter();
+                setIsSlide(false);
+            }
+        };
+
+        document.addEventListener("mouseup", handleMouseUp);
+        return () => {
+            document.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, [isSlide]);
+
 
     const [dateFormatter, patern] = useMemo(() => {
         switch (formatter) {
@@ -94,7 +109,7 @@ const DateFilter = forwardRef(({ column, api, formatter }, ref) => {
 
 
     const clickTrack = (event) => {
-        let dt = (max - min) / ref.current.clientWidth;
+        let dt = (max - min) / sliderRef.current.clientWidth;
         let xStart = event.clientX;
         let minV = minValue;
         let maxV = maxValue;
@@ -126,6 +141,7 @@ const DateFilter = forwardRef(({ column, api, formatter }, ref) => {
         const onMouseUp = () => {
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
+            updateFilter();
         }
 
         document.addEventListener('mousemove', onMouseMove);
@@ -177,6 +193,7 @@ const DateFilter = forwardRef(({ column, api, formatter }, ref) => {
                             ref={sliderRef}
                             onMouseDown={clickTrack}
                         ></div>
+                        <div className='slider_click_area' onMouseDown={clickTrack}></div>
                         <input
                             className='input_slider1'
                             type='range'
@@ -184,7 +201,7 @@ const DateFilter = forwardRef(({ column, api, formatter }, ref) => {
                             max={max}
                             value={minValue}
                             onInput={(e) => handleSlide(Number(e.target.value), true)}
-                            onMouseUp={updateFilter}
+                            onMouseDown={() => setIsSlide(true)}
                         />
                         <input
                             className='input_slider2'
@@ -193,7 +210,7 @@ const DateFilter = forwardRef(({ column, api, formatter }, ref) => {
                             max={max}
                             value={maxValue}
                             onInput={(e) => handleSlide(Number(e.target.value), false)}
-                            onMouseUp={updateFilter}
+                            onMouseDown={() => setIsSlide(true)}
                         />
                     </div>
                 </div>
