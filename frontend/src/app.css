@@ -417,7 +417,6 @@ input[type='range']::-ms-track {
     z-index: 3;
 }
 
-
 .agtables {
     display: flex;
     flex-direction: column;
@@ -434,7 +433,7 @@ input[type='range']::-ms-track {
 
 .tabs {
     width: 100%;
-    padding: 5px 0;
+    padding: 7.5px 0;
     background-color: #ffffff;
     border-left: 1px solid #dbdddf;
     color: #343434;
@@ -450,11 +449,11 @@ input[type='range']::-ms-track {
 }
 
 .table_wrapper .active_bottom_tab {
-    border-bottom: 1px solid #2196f3;
-    box-shadow: inset 0em -2px #2196f3;
+    border-bottom: 1px solid #6A8AFC;
+    box-shadow: inset 0em -2px #6A8AFC;
 }
 
 .table_wrapper .active_top_tab {
-    border-top: 1px solid #2196f3;
-    box-shadow: inset 0em 2px #2196f3;
+    border-top: 1px solid #6A8AFC;
+    box-shadow: inset 0em 2px #6A8AFC;
 }
