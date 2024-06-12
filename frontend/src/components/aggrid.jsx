@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, forwardRef } from "react";
+import React, { useCallback, useMemo, useState, forwardRef, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import * as util from 'util';
 import "ag-grid-community/styles/ag-grid.css";
@@ -10,13 +10,15 @@ import NumberFilter from "./custom_filters/number_filter.jsx";
 import DateFilter from "./custom_filters/date_filter.jsx";
 import ColumnFilter from "./custom_filters/column_filter.jsx";
 
-const AgGrid = ({ table }) => {
+const AgGrid = ({ table, height, index, uuidKey }) => {
     const [filters, setFilters] = useState(false);
     const [filterLayout, setFilterLayout] = useState(null);
     const [filterHeight, setFilterHeight] = useState(null);
 
-    const initialState = JSON.parse(localStorage.getItem(table.uuidKey));
-    const initialWidth = localStorage.getItem(table.uuidKey + "width");
+    const initialState = JSON.parse(localStorage.getItem(uuidKey + index));
+    const initialWidth = localStorage.getItem(uuidKey + index + "width");
+
+    console.log(table);
 
     const getCellRenderer = (params, column) => {
         let value = params.value;
@@ -176,7 +178,7 @@ const AgGrid = ({ table }) => {
     const sideBar = useMemo(() => ({
         toolPanels: [
             {
-                id: 'filters',
+                id: "filters",
                 labelDefault: 'Filters',
                 labelKey: 'filters',
                 iconKey: 'filter',
@@ -188,11 +190,11 @@ const AgGrid = ({ table }) => {
                     suppressSyncLayoutWithGrid: true,
                     suppressFiltersToolPanel: true
                 },
-                width: initialWidth ? parseInt(initialWidth) : 223,
+                width: initialWidth && parseFloat(initialWidth) || 223,
             },
         ],
         defaultToolPanel: 'filters',
-    }), [initialWidth]);
+    }), [table, initialWidth]);
 
     const formatNumber = (value, formatter) => {
         if (isNaN(Number(value))) return value;
@@ -264,14 +266,15 @@ const AgGrid = ({ table }) => {
     };
 
     const onStateUpdated = (params) => {
-        localStorage.setItem(table.uuidKey, JSON.stringify(params.state));
+        localStorage.setItem(uuidKey + index, JSON.stringify(params.state));
         const filtersToolPanel = params.api.getToolPanelInstance("filters");
-        filtersToolPanel && localStorage.setItem(table.uuidKey + "width", filtersToolPanel.eGui.clientWidth);
+        filtersToolPanel && localStorage.setItem(uuidKey + index + "width", filtersToolPanel.eGui.clientWidth);
     };
 
     return (
-        <div className="ag-theme-quartz aggrid">
+        <div className="ag-theme-quartz aggrid" style={height}>
             <AgGridReact
+                key={index}
                 rowData={table.rowData}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}

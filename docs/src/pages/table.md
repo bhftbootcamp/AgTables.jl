@@ -1,4 +1,40 @@
-# Table
+# Panel
+
+```@docs
+AGPanel
+ag_panel
+```
+
+### Example
+
+```@example
+using AgTables
+
+struct Foo
+    a::String
+    b::String
+    c::String
+end
+
+sample_data = [
+    (a = "1", b = "2024-01-01", c = "tuple"),
+    Dict("a" => "2", "b" => "2024-01-01", "d" => "dict"),
+    Foo("3", "2024-01-01", "struct"),
+]
+
+table1 = ag_table(sample_data)
+table2 = ag_table(ag_order_sample_data())
+panel = ag_panel(table1, table2)
+
+ag_save("panel_example.html", panel)
+nothing # hide
+```
+
+```@raw html
+    <iframe src="../panel_example.html" style="height:200px;width:100%;"></iframe>
+```
+
+# [Table](@id table)
 
 ```@docs
 AGTable
@@ -8,7 +44,7 @@ ag_table
 ### Example
 
 ```@example
-using AgTable
+using AgTables
 
 struct Foo
     a::String
@@ -47,7 +83,7 @@ AgStringColumnDef
 ### Example
 
 ```@example
-using AgTable
+using AgTables
 
 flights_sample_data = ag_flights_sample_data()
 
@@ -102,7 +138,7 @@ AgNumberColumnDef
 ### Example
 
 ```@example
-using AgTable
+using AgTables
 
 currencies_sample_data = ag_currencies_sample_data()
 
@@ -129,7 +165,7 @@ table = ag_table(
         filter = true,
         formatter = AGFormatter(
             style = AG_CURRENCY,
-            currency = AgTable.USD,
+            currency = AgTables.USD,
             separator = true,
         ),
     ),
@@ -158,7 +194,7 @@ AgTimeColumnDef
 ### Example
 
 ```@example
-using AgTable
+using AgTables
 
 order_sample_data = ag_order_sample_data()
 

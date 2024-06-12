@@ -1,6 +1,6 @@
 import React from "react";
 import { LicenseManager } from "@ag-grid-enterprise/core";
-import AgGrid from "./components/aggrid.jsx";
+import Panel from "./components/panel.jsx";
 import Favicon from "./favicon.jsx";
 import "./app.css";
 
@@ -11,7 +11,7 @@ const App = () => {
     console.log(table_json);
     return <>
         <Favicon />
-        <AgGrid table={table_json} />
+        <Panel table={table_json}/>
     </>;
 }
 

@@ -1,6 +1,6 @@
-# AgTable
+# AgTables
 
-AgTable integrates React and is bundled using Webpack. This project provides a collection of AG Grid table components designed for use in Julia applications.
+AgTables integrates React and is bundled using Webpack. This project provides a collection of AG Grid table components designed for use in Julia applications.
 
 ## Development
 

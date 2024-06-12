@@ -20,7 +20,7 @@ body {
 
 .aggrid {
     width: 100%;
-    height: 100vh;
+    height: calc(100vh - 27px);
 }
 
 .filter_panel {
@@ -415,4 +415,46 @@ input[type='range']::-ms-track {
 .filter .input_slider1,
 .filter .input_slider2 {
     z-index: 3;
+}
+
+
+.agtables {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+}
+
+.table_wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: stretch;
+    width: 100%;
+}
+
+.tabs {
+    width: 100%;
+    padding: 5px 0;
+    background-color: #ffffff;
+    border-left: 1px solid #dbdddf;
+    color: #343434;
+    text-align: center;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Ubuntu, Cantarell, "Helvetica Neue", 
+        sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.table_wrapper .active_bottom_tab {
+    border-bottom: 1px solid #2196f3;
+    box-shadow: inset 0em -2px #2196f3;
+}
+
+.table_wrapper .active_top_tab {
+    border-top: 1px solid #2196f3;
+    box-shadow: inset 0em 2px #2196f3;
 }

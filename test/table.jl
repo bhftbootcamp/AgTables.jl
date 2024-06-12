@@ -39,8 +39,6 @@
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "a",
@@ -108,8 +106,6 @@
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "a",
@@ -180,8 +176,6 @@
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "a",
@@ -245,7 +239,7 @@
                 formatter = AGFormatter(
                     short = true,
                     style = AG_PERCENT,
-                    currency = AgTable.USD,
+                    currency = AgTables.USD,
                     separator = true,
                     minimum_fraction_digits = 1,
                     maximum_fraction_digits = 2,
@@ -275,8 +269,6 @@
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = [
                 AgNumberColumnDef(
                     field_name = "a",
@@ -292,7 +284,7 @@
                     formatter = AGFormatter(
                         short = true,
                         style = AG_PERCENT,
-                        currency = AgTable.USD,
+                        currency = AgTables.USD,
                         separator = true,
                         minimum_fraction_digits = 1,
                         maximum_fraction_digits = 2,
@@ -369,8 +361,6 @@
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "a",
@@ -455,8 +445,6 @@
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "a",
@@ -518,7 +506,7 @@
                 formatter = AGFormatter(
                     short = true,
                     style = AG_PERCENT,
-                    currency = AgTable.USD,
+                    currency = AgTables.USD,
                     separator = true,
                     minimum_fraction_digits = 1,
                     maximum_fraction_digits = 2,
@@ -575,8 +563,6 @@
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgNumberColumnDef(
                     field_name = "a",
@@ -592,7 +578,7 @@
                     formatter = AGFormatter(
                         short = true,
                         style = AG_PERCENT,
-                        currency = AgTable.USD,
+                        currency = AgTables.USD,
                         separator = true,
                         minimum_fraction_digits = 1,
                         maximum_fraction_digits = 2,
@@ -671,8 +657,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(;
                     field_name = "c",
@@ -740,8 +724,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(;
                     field_name = "c",
@@ -812,8 +794,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(;
                     field_name = "c",
@@ -899,8 +879,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(;
                     field_name = "c",
@@ -985,8 +963,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(;
                     field_name = "c",
@@ -1071,8 +1047,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "c",
@@ -1183,8 +1157,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "c",
@@ -1278,8 +1250,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "a",
@@ -1347,8 +1317,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "a",
@@ -1419,8 +1387,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "a",
@@ -1506,8 +1472,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgNumberColumnDef(
                     field_name = "a",
@@ -1592,8 +1556,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "a",
@@ -1678,8 +1640,6 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgStringColumnDef(
                     field_name = "a",
@@ -1711,7 +1671,7 @@ end
                     field_name = "c",
                     header_name = "C",
                     filter = true,
-                default_sort = nothing,
+                    default_sort = nothing,
                     width = 500,
                     cell_background = "#111",
                     rect_background = "#222",
@@ -1790,14 +1750,12 @@ end
             header_height = 50,
             row_height = 50,
             column_filter = true,
-            uuid_key = "",
-            license_key = "",
             column_defs = AbstractColumnDef[
                 AgNumberColumnDef(
                     field_name = "a",
                     header_name = "A",
                     filter = true,
-                default_sort = nothing,
+                    default_sort = nothing,
                     width = 500,
                     cell_background = "#111",
                     rect_background = "#222",
@@ -1810,7 +1768,7 @@ end
                     field_name = "b",
                     header_name = "B",
                     filter = true,
-                default_sort = nothing,
+                    default_sort = nothing,
                     date_formatter = AG_DATE,
                     width = 500,
                     cell_background = "#111",
@@ -1824,7 +1782,7 @@ end
                     field_name = "c",
                     header_name = "C",
                     filter = true,
-                default_sort = nothing,
+                    default_sort = nothing,
                     width = 500,
                     cell_background = "#111",
                     rect_background = "#222",
@@ -1837,5 +1795,70 @@ end
         )
 
         @test table == result
+    end
+end
+
+@testset verbose = true "Table panel" begin
+
+    struct Foo
+        a::Union{Int64,String}
+        b::Union{DateTime,String}
+        c::String
+    end
+
+    values_structs = [
+        Foo(1, DateTime(2024), "text"),
+        Foo(1, DateTime(2024), "text"),
+        Foo(1, DateTime(2024), "text"),
+    ]
+
+    string_structs = [
+        Foo("1", "2024-01-01", "text"),
+        Foo("1", "2024-01-01", "text"),
+        Foo("1", "2024-01-01", "text"),
+    ]
+
+    mixed_structs = [values_structs; string_structs]
+
+    @testset "Case №1: Single panel" begin
+        panel = ag_panel(
+            ag_table(values_structs; name = "Single table");
+            name = "Single panel",
+            bottom = true,
+        )
+
+        result = AGPanel(
+            name = "Single panel",
+            tables = (ag_table(values_structs; name = "Single table"),),
+            bottom = true,
+            uuid_key = "",
+            license_key = "",
+        )
+
+        @test panel == result
+    end
+
+    @testset "Case №2: Panel with tables" begin
+        panel = ag_panel(
+            ag_table(values_structs; name = "Values table"),
+            ag_table(string_structs; name = "String table"),
+            ag_table(mixed_structs; name = "Mixed table");
+            name = "Single panel",
+            bottom = false,
+        )
+
+        result = AGPanel(
+            name = "Single panel",
+            tables = (
+                ag_table(values_structs; name = "Values table"), 
+                ag_table(string_structs; name = "String table"),
+                ag_table(mixed_structs; name = "Mixed table"),
+            ),
+            bottom = false,
+            uuid_key = "",
+            license_key = "",
+        )
+
+        @test panel == result
     end
 end
