@@ -1,14 +1,14 @@
-using AgTable
+using AgTables
 using Documenter
 
-DocMeta.setdocmeta!(AgTable, :DocTestSetup, :(using AgTable); recursive = true)
+DocMeta.setdocmeta!(AgTables, :DocTestSetup, :(using AgTables); recursive = true)
 
 makedocs(;
-    modules = [AgTable],
-    sitename = "AgTable.jl",
+    modules = [AgTables],
+    sitename = "AgTables.jl",
     format = Documenter.HTML(;
-        repolink = "https://github.com/bhftbootcamp/AgTable.jl",
-        canonical = "https://bhftbootcamp.github.io/AgTable.jl",
+        repolink = "https://github.com/bhftbootcamp/AgTables.jl",
+        canonical = "https://bhftbootcamp.github.io/AgTables.jl",
         edit_link = "master",
         assets = ["assets/favicon.ico"],
         sidebar_sitename = true,  # Set to 'false' if the package logo already contain its name
@@ -24,7 +24,7 @@ makedocs(;
 )
 
 deploydocs(;
-    repo = "github.com/bhftbootcamp/AgTable.jl",
+    repo = "github.com/bhftbootcamp/AgTables.jl",
     devbranch = "master",
     push_preview = true,
 )

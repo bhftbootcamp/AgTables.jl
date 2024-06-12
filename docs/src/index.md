@@ -1,14 +1,14 @@
 ![animation](assets/animation_light.gif)
 
-# AgTable.jl
+# AgTables.jl
 
-AgTable is an easy-to-use wrapper for the [AG Grid](https://www.ag-grid.com/) library, designed for quick visualization and easy sharing of tabular data.
+AgTables is an easy-to-use wrapper for the [AG Grid](https://www.ag-grid.com/) library, designed for quick visualization and easy sharing of tabular data.
 
 ## Installation
-To install AgTable, simply use the Julia package manager:
+To install AgTables, simply use the Julia package manager:
 
 ```julia
-] add AgTable
+] add AgTables
 ```
 
 ## Usage
@@ -16,16 +16,16 @@ To install AgTable, simply use the Julia package manager:
 In the simplest case, the user just needs to parse the data and put it in a table:
 
 ```julia
-using AgTable
+using AgTables
 
 julia> order_data = ag_order_sample_data()
-100-element Vector{AgTable.Order}:
- AgTable.Order("LTCUSDT", DateTime("2024-05-29T13:40:00"), "ORD00001", ...)
- AgTable.Order("ETHUSDT", DateTime("2024-05-29T12:30:00"), "ORD00002", ...)
- AgTable.Order("XRPUSDT", DateTime("2024-05-29T13:00:00"), "ORD00003", ...)
+100-element Vector{AgTables.Order}:
+ AgTables.Order("LTCUSDT", DateTime("2024-05-29T13:40:00"), "ORD00001", ...)
+ AgTables.Order("ETHUSDT", DateTime("2024-05-29T12:30:00"), "ORD00002", ...)
+ AgTables.Order("XRPUSDT", DateTime("2024-05-29T13:00:00"), "ORD00003", ...)
 
 julia> order_table = ag_table(order_data)
-AgTable.AGTable(AgTable ❤️ Julia)
+AgTables.AGTable(AgTables ❤️ Julia)
 
 julia> ag_show(order_table)
 ```
@@ -35,7 +35,7 @@ julia> ag_show(order_table)
 To go further, the user can customize various settings for each column:
 
 ```julia
-using AgTable
+using AgTables
 
 ag_stock_column_defs = [
     AgStringColumnDef(
@@ -75,7 +75,7 @@ ag_stock_column_defs = [
         header_name = "Market Cap",
         formatter = AGFormatter(;
             style = AG_CURRENCY,
-            currency = AgTable.USD,
+            currency = AgTables.USD,
             separator = true,
         ),
     ),

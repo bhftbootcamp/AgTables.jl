@@ -4,15 +4,15 @@
   <img src=docs/src/assets/animation_light.gif>
 </picture>
 
-# AgTable.jl
+# AgTables.jl
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://bhftbootcamp.github.io/AgTable.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://bhftbootcamp.github.io/AgTable.jl/dev/)
-[![Build Status](https://github.com/bhftbootcamp/AgTable.jl/actions/workflows/Coverage.yml/badge.svg?branch=master)](https://github.com/bhftbootcamp/AgTable.jl/actions/workflows/Coverage.yml?query=branch%3Amaster)
-[![Coverage](https://codecov.io/gh/bhftbootcamp/AgTable.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/bhftbootcamp/AgTable.jl)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://bhftbootcamp.github.io/AgTables.jl/stable/)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://bhftbootcamp.github.io/AgTables.jl/dev/)
+[![Build Status](https://github.com/bhftbootcamp/AgTables.jl/actions/workflows/Coverage.yml/badge.svg?branch=master)](https://github.com/bhftbootcamp/AgTables.jl/actions/workflows/Coverage.yml?query=branch%3Amaster)
+[![Coverage](https://codecov.io/gh/bhftbootcamp/AgTables.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/bhftbootcamp/AgTables.jl)
 [![Registry](https://img.shields.io/badge/registry-Green-green)](https://github.com/bhftbootcamp/Green)
 
-AgTable is an easy-to-use wrapper for the [AG Grid](https://www.ag-grid.com/) library, designed for quick visualization and easy sharing of tabular data.
+AgTables is an easy-to-use wrapper for the [AG Grid](https://www.ag-grid.com/) library, designed for quick visualization and easy sharing of tabular data.
 
 ## Installation
 If you haven't installed our [local registry](https://github.com/bhftbootcamp/Green) yet, do that first:
@@ -20,10 +20,10 @@ If you haven't installed our [local registry](https://github.com/bhftbootcamp/Gr
 ] registry add https://github.com/bhftbootcamp/Green.git
 ```
 
-To install AgTable, simply use the Julia package manager:
+To install AgTables, simply use the Julia package manager:
 
 ```julia
-] add AgTable
+] add AgTables
 ```
 
 ## Usage
@@ -31,16 +31,16 @@ To install AgTable, simply use the Julia package manager:
 In the most basic scenario, the user just needs to parse the data and put it in a table:
 
 ```julia
-using AgTable
+using AgTables
 
 julia> order_data = ag_order_sample_data()
-100-element Vector{AgTable.Order}:
- AgTable.Order("LTCUSDT", DateTime("2024-05-29T13:40:00"), "ORD00001", ...)
- AgTable.Order("ETHUSDT", DateTime("2024-05-29T12:30:00"), "ORD00002", ...)
- AgTable.Order("XRPUSDT", DateTime("2024-05-29T13:00:00"), "ORD00003", ...)
+100-element Vector{AgTables.Order}:
+ AgTables.Order("LTCUSDT", DateTime("2024-05-29T13:40:00"), "ORD00001", ...)
+ AgTables.Order("ETHUSDT", DateTime("2024-05-29T12:30:00"), "ORD00002", ...)
+ AgTables.Order("XRPUSDT", DateTime("2024-05-29T13:00:00"), "ORD00003", ...)
 
 julia> order_table = ag_table(order_data)
-AgTable.AGTable(AgTable ❤️ Julia)
+AgTables.AGTable(Sheet1)
 
 julia> ag_show(order_table)
 ```
@@ -50,7 +50,7 @@ julia> ag_show(order_table)
 To go further, the user can customize various settings for each column:
 
 ```julia
-using AgTable
+using AgTables
 
 ag_stock_column_defs = [
     AgStringColumnDef(
@@ -90,7 +90,7 @@ ag_stock_column_defs = [
         header_name = "Market Cap",
         formatter = AGFormatter(
             style = AG_CURRENCY,
-            currency = AgTable.USD,
+            currency = AgTables.USD,
             separator = true,
         ),
     ),
@@ -123,4 +123,4 @@ ENV["AG_GRID_LICENSE_KEY"] = "YOUR_LICENSE_KEY_HERE"
 
 ## Contributing
 
-Contributions to AgTable are welcome! If you encounter a bug, have a feature request, or would like to contribute code, please open an issue or a pull request on GitHub.
+Contributions to AgTables are welcome! If you encounter a bug, have a feature request, or would like to contribute code, please open an issue or a pull request on GitHub.
