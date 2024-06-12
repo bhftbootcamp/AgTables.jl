@@ -20,7 +20,7 @@ body {
 
 .aggrid {
     width: 100%;
-    height: calc(100vh - 27px);
+    height: calc(100vh - 33px);
 }
 
 .filter_panel {
@@ -450,10 +450,10 @@ input[type='range']::-ms-track {
 
 .table_wrapper .active_bottom_tab {
     border-bottom: 1px solid #6A8AFC;
-    box-shadow: inset 0em -2px #6A8AFC;
+    box-shadow: inset 0em -1px #6A8AFC;
 }
 
 .table_wrapper .active_top_tab {
     border-top: 1px solid #6A8AFC;
-    box-shadow: inset 0em 2px #6A8AFC;
+    box-shadow: inset 0em 1px #6A8AFC;
 }

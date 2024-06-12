@@ -22,7 +22,7 @@ const Panel = React.memo(({ table }) => {
     }), [table.bottom]);
 
     const tableHeight = useMemo(() => ({
-        height: table.tables.length > 1 ? "calc(100 vh - 32px" : "100vh",
+        height: table.tables.length > 1 ? "calc(100 vh - 33px" : "100vh",
     }), [table.tables]);
 
     return (
