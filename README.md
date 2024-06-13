@@ -99,7 +99,7 @@ stock_table = ag_table(
 ag_show(ag_panel(stock_table, order_table))
 ```
 
-![stock_screener_table](/docs/src/assets/stock_order_panel.png)
+![stock_order_panel](/docs/src/assets/stock_order_panel.png)
 
 ## Using AG Grid Enterprise
 
