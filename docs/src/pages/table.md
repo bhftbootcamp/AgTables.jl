@@ -1,39 +1,3 @@
-# Panel
-
-```@docs
-AGPanel
-ag_panel
-```
-
-### Example
-
-```@example
-using AgTables
-
-struct Foo
-    a::String
-    b::String
-    c::String
-end
-
-sample_data = [
-    (a = "1", b = "2024-01-01", c = "tuple"),
-    Dict("a" => "2", "b" => "2024-01-01", "d" => "dict"),
-    Foo("3", "2024-01-01", "struct"),
-]
-
-table1 = ag_table(sample_data)
-table2 = ag_table(ag_order_sample_data())
-panel = ag_panel(table1, table2)
-
-ag_save("panel_example.html", panel)
-nothing # hide
-```
-
-```@raw html
-    <iframe src="../panel_example.html" style="height:200px;width:100%;"></iframe>
-```
-
 # [Table](@id table)
 
 ```@docs
@@ -66,6 +30,52 @@ nothing # hide
 
 ```@raw html
     <iframe src="../table_example.html" style="height:200px;width:100%;"></iframe>
+```
+
+# Panel
+
+```@docs
+AGPanel
+ag_panel
+```
+
+### Example
+
+```@example
+using AgTables
+
+cars = [
+    (id = 1, make = "Toyota", model = "Corolla", year = 2020),
+    (id = 2, make = "Ford", model = "Mustang", year = 2019),
+    (id = 3, make = "Honda", model = "Civic", year = 2021),
+    (id = 4, make = "Chevrolet", model = "Implata", year = 2018),
+]
+
+customers = [
+    (id = 1, name = "John", email = "john@example.com"),
+    (id = 2, name = "Jane", email = "jane@example.com"),
+    (id = 3, name = "Emily", email = "emily@example.com"),
+    (id = 4, name = "Michael", email = "michael@example.com"),
+]
+
+rentals = [
+    (rental_id = 1, car_id = 1, customer_id = 1, rental_date = "2024-06-01", return_date = "2024-06-10"),
+    (rental_id = 2, car_id = 2, customer_id = 2, rental_date = "2024-06-05", return_date = "2024-06-12"),
+    (rental_id = 3, car_id = 3, customer_id = 3, rental_date = "2024-06-07", return_date = "2024-06-14"),
+    (rental_id = 4, car_id = 4, customer_id = 4, rental_date = "2024-06-09", return_date = "2024-06-16"),
+]
+
+table1 = ag_table(cars, name = "Cars")
+table2 = ag_table(customers, name = "Customers")
+table3 = ag_table(rentals, name = "Rentals")
+panel = ag_panel(table1, table2, table3)
+
+ag_save("panel_example.html", panel)
+nothing # hide
+```
+
+```@raw html
+    <iframe src="../panel_example.html" style="height:200px;width:100%;"></iframe>
 ```
 
 # [Columns](@id column)
