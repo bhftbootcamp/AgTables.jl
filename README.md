@@ -52,7 +52,10 @@ To go further, the user can customize various settings for each column:
 ```julia
 using AgTables
 
-ag_stock_column_defs = [
+order_table = ag_table(ag_order_sample_data(); name = "Orders")
+
+stock_table = ag_table(
+    ag_stock_sample_data(),
     AgStringColumnDef(
         field_name = "name",
         header_name = "Name",
@@ -69,15 +72,8 @@ ag_stock_column_defs = [
     AgNumberColumnDef(
         field_name = "h24",
         header_name = "24h%",
-        formatter = AGFormatter(
-            style = AG_PERCENT,
-            maximum_fraction_digits = 2,
-        ),
-        threshold = AGThreshold(
-            0;
-            color_up = "#22ab94",
-            color_down = "#f23645",
-        ),
+        formatter = AGFormatter(style = AG_PERCENT, maximum_fraction_digits = 2),
+        threshold = AGThreshold(0; color_up = "#22ab94", color_down = "#f23645"),
         filter = true,
     ),
     AgNumberColumnDef(
@@ -88,30 +84,22 @@ ag_stock_column_defs = [
     AgNumberColumnDef(
         field_name = "mkt",
         header_name = "Market Cap",
-        formatter = AGFormatter(
-            style = AG_CURRENCY,
-            currency = AgTables.USD,
-            separator = true,
-        ),
+        formatter = AGFormatter(style = AG_CURRENCY, currency = AgTables.USD, separator = true),
     ),
     AgStringColumnDef(
         field_name = "sector",
         header_name = "Sector",
         text_align = AG_LEFT,
         filter = true,
-    ),
-]
-
-ag_show(
-    ag_table(
-        ag_stock_sample_data(),
-        ag_stock_column_defs...,
-        column_filter = true,
-    ),
+    );
+    column_filter = true,
+    name = "Stocks",
 )
+
+ag_show(ag_panel(stock_table, order_table))
 ```
 
-![stock_screener_table](/docs/src/assets/stock_screener_table.png)
+![stock_screener_table](/docs/src/assets/stock_order_panel.png)
 
 ## Using AG Grid Enterprise
 

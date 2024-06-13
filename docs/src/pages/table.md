@@ -59,10 +59,10 @@ customers = [
 ]
 
 rentals = [
-    (rental_id = 1, car_id = 1, customer_id = 1, rental_date = "2024-06-01", return_date = "2024-06-10"),
-    (rental_id = 2, car_id = 2, customer_id = 2, rental_date = "2024-06-05", return_date = "2024-06-12"),
-    (rental_id = 3, car_id = 3, customer_id = 3, rental_date = "2024-06-07", return_date = "2024-06-14"),
-    (rental_id = 4, car_id = 4, customer_id = 4, rental_date = "2024-06-09", return_date = "2024-06-16"),
+    (rental_id = 1, car_id = 1, customer_id = 1, rental_date = "2024-06-01"),
+    (rental_id = 2, car_id = 2, customer_id = 2, rental_date = "2024-06-05"),
+    (rental_id = 3, car_id = 3, customer_id = 3, rental_date = "2024-06-07"),
+    (rental_id = 4, car_id = 4, customer_id = 4, rental_date = "2024-06-09"),
 ]
 
 table1 = ag_table(cars, name = "Cars")
