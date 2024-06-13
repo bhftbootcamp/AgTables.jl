@@ -47,7 +47,7 @@ julia> ag_show(order_table)
 
 ![order_table](/docs/src/assets/order_table.png)
 
-To go further, the user can customize various settings for each column:
+To go further, the user can composite panels from tables and configure different parameters for each column of the table:
 
 ```julia
 using AgTables
