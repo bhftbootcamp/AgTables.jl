@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · AgTables.jl</title><meta name="title" content="Home · AgTables.jl"/><meta property="og:title" content="Home · AgTables.jl"/><meta property="twitter:title" content="Home · AgTables.jl"/><meta name="description" content="Documentation for AgTables.jl."/><meta property="og:description" content="Documentation for AgTables.jl."/><meta property="twitter:description" content="Documentation for AgTables.jl."/><meta property="og:url" content="https://bhftbootcamp.github.io/AgTables.jl/"/><meta property="twitter:url" content="https://bhftbootcamp.github.io/AgTables.jl/"/><link rel="canonical" href="https://bhftbootcamp.github.io/AgTables.jl/"/><script data-outdated-warner src="assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="assets/documenter.js"></script><script src="search_index.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="assets/themeswap.js"></script><link href="assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href><img src="assets/logo.svg" alt="AgTables.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href>AgTables.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li class="is-active"><a class="tocitem" href>Home</a><ul class="internal"><li><a class="tocitem" href="#Installation"><span>Installation</span></a></li><li><a class="tocitem" href="#Usage"><span>Usage</span></a></li><li><a class="tocitem" href="#Using-AG-Grid-Enterprise"><span>Using AG Grid Enterprise</span></a></li></ul></li><li><span class="tocitem">API Reference</span><ul><li><a class="tocitem" href="pages/table/">Table</a></li><li><a class="tocitem" href="pages/utils/">Utils</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Home</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Home</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/bhftbootcamp/AgTables.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/bhftbootcamp/AgTables.jl/blob/master/docs/src/index.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><p><img src="assets/animation_light.gif" alt="animation"/></p><h1 id="AgTables.jl"><a class="docs-heading-anchor" href="#AgTables.jl">AgTables.jl</a><a id="AgTables.jl-1"></a><a class="docs-heading-anchor-permalink" href="#AgTables.jl" title="Permalink"></a></h1><p>AgTables is an easy-to-use wrapper for the <a href="https://www.ag-grid.com/">AG Grid</a> library, designed for quick visualization and easy sharing of tabular data.</p><h2 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a><a id="Installation-1"></a><a class="docs-heading-anchor-permalink" href="#Installation" title="Permalink"></a></h2><p>If you haven&#39;t installed our <a href="https://github.com/bhftbootcamp/Green">local registry</a> yet, do that first:</p><pre><code class="nohighlight hljs">] registry add https://github.com/bhftbootcamp/Green.git</code></pre><p>To install AgTables, simply use the Julia package manager:</p><pre><code class="language-julia hljs">] add AgTables</code></pre><h2 id="Usage"><a class="docs-heading-anchor" href="#Usage">Usage</a><a id="Usage-1"></a><a class="docs-heading-anchor-permalink" href="#Usage" title="Permalink"></a></h2><p>In the most basic scenario, the user just needs to parse the data and put it in a table:</p><pre><code class="language-julia hljs">using AgTables
+
+julia&gt; order_data = ag_order_sample_data()
+100-element Vector{AgTables.Order}:
+ AgTables.Order(&quot;LTCUSDT&quot;, DateTime(&quot;2024-05-29T13:40:00&quot;), &quot;ORD00001&quot;, ...)
+ AgTables.Order(&quot;ETHUSDT&quot;, DateTime(&quot;2024-05-29T12:30:00&quot;), &quot;ORD00002&quot;, ...)
+ AgTables.Order(&quot;XRPUSDT&quot;, DateTime(&quot;2024-05-29T13:00:00&quot;), &quot;ORD00003&quot;, ...)
+
+julia&gt; order_table = ag_table(order_data)
+AgTables.AGTable(Sheet1)
+
+julia&gt; ag_show(order_table)
+true</code></pre><p><img src="assets/order_table.png" alt="order_table"/></p><p>To go further, the user can composite panels from tables and configure different parameters for each column of the table:</p><pre><code class="language-julia hljs">using AgTables
+
+ag_show(
+    ag_panel(
+        ag_table(
+            ag_stock_sample_data(),
+            AgNumberColumnDef(;
+                field_name = &quot;price&quot;,
+                str_format = &quot;%s &lt;span style=&#39;font-size:10px;color:rgb(120,123,134);font-weight:400&#39;&gt;USD&lt;/span&gt;&quot;,
+                visible = true,
+            ),
+            AgNumberColumnDef(;
+                field_name = &quot;h24&quot;,
+                header_name = &quot;24h%&quot;,
+                formatter = AGFormatter(;
+                    style = AG_PERCENT,
+                    maximum_fraction_digits = 2,
+                ),
+                threshold = AGThreshold(
+                    0;
+                    color_up = &quot;#22ab94&quot;,
+                    color_down = &quot;#f23645&quot;,
+                ),
+                filter = true,
+            ),
+            AgNumberColumnDef(;
+                field_name = &quot;volume&quot;,
+                formatter = AGFormatter(;
+                    short = true,
+                ),
+            ),
+            AgNumberColumnDef(;
+                field_name = &quot;mkt&quot;,
+                header_name = &quot;market сap&quot;,
+                formatter = AGFormatter(;
+                    style = AG_CURRENCY,
+                    currency = AgTables.USD,
+                    separator = true,
+                ),
+            ),
+            AgStringColumnDef(;
+                field_name = &quot;sector&quot;,
+                filter = true,
+            );
+            column_filter = true,
+            name = &quot;Stocks&quot;,
+        ),
+        ag_table(
+            ag_order_sample_data(),
+            AgStringColumnDef(;
+                field_name = &quot;symbol&quot;,
+                filter = true,
+            ),
+            AgStringColumnDef(;
+                field_name = &quot;orderSide&quot;,
+                color_map = Dict(
+                    &quot;BUY&quot; =&gt; &quot;green&quot;,
+                    &quot;SELL&quot; =&gt; &quot;red&quot;,
+                ),
+                filter = true,
+            ),
+            name = &quot;Orders&quot;,
+        ),
+    ),
+)</code></pre><p><img src="assets/stock_order_panel.png" alt="stock_order_panel"/></p><h2 id="Using-AG-Grid-Enterprise"><a class="docs-heading-anchor" href="#Using-AG-Grid-Enterprise">Using AG Grid Enterprise</a><a id="Using-AG-Grid-Enterprise-1"></a><a class="docs-heading-anchor-permalink" href="#Using-AG-Grid-Enterprise" title="Permalink"></a></h2><p>Set <code>AG_GRID_LICENSE_KEY</code> at runtime to enable AG Grid&#39;s enterprise features:</p><pre><code class="language-julia hljs">ENV[&quot;AG_GRID_LICENSE_KEY&quot;] = &quot;YOUR_LICENSE_KEY_HERE&quot;</code></pre></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="pages/table/">Table »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.4.1 on <span class="colophon-date" title="Friday 14 June 2024 20:27">Friday 14 June 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
