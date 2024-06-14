@@ -1,14 +1,14 @@
 ![animation](assets/animation_light.gif)
 
-# AgTable.jl
+# AgTables.jl
 
-AgTable is an easy-to-use wrapper for the [AG Grid](https://www.ag-grid.com/) library, designed for quick visualization and easy sharing of tabular data.
+AgTables is an easy-to-use wrapper for the [AG Grid](https://www.ag-grid.com/) library, designed for quick visualization and easy sharing of tabular data.
 
 ## Installation
-To install AgTable, simply use the Julia package manager:
+To install AgTables, simply use the Julia package manager:
 
 ```julia
-] add AgTable
+] add AgTables
 ```
 
 ## Usage
@@ -16,28 +16,31 @@ To install AgTable, simply use the Julia package manager:
 In the simplest case, the user just needs to parse the data and put it in a table:
 
 ```julia
-using AgTable
+using AgTables
 
 julia> order_data = ag_order_sample_data()
-100-element Vector{AgTable.Order}:
- AgTable.Order("LTCUSDT", DateTime("2024-05-29T13:40:00"), "ORD00001", ...)
- AgTable.Order("ETHUSDT", DateTime("2024-05-29T12:30:00"), "ORD00002", ...)
- AgTable.Order("XRPUSDT", DateTime("2024-05-29T13:00:00"), "ORD00003", ...)
+100-element Vector{AgTables.Order}:
+ AgTables.Order("LTCUSDT", DateTime("2024-05-29T13:40:00"), "ORD00001", ...)
+ AgTables.Order("ETHUSDT", DateTime("2024-05-29T12:30:00"), "ORD00002", ...)
+ AgTables.Order("XRPUSDT", DateTime("2024-05-29T13:00:00"), "ORD00003", ...)
 
 julia> order_table = ag_table(order_data)
-AgTable.AGTable(AgTable ❤️ Julia)
+AgTables.AGTable(AgTables ❤️ Julia)
 
 julia> ag_show(order_table)
 ```
 
 ![order_table](assets/order_table.png)
 
-To go further, the user can customize various settings for each column:
+To go further, the user can composite panels from tables and configure different parameters for each column of the table:
 
 ```julia
-using AgTable
+using AgTables
 
-ag_stock_column_defs = [
+order_table = ag_table(ag_order_sample_data(); name = "Orders")
+
+stock_table = ag_table(
+    ag_stock_sample_data(),
     AgStringColumnDef(
         field_name = "name",
         header_name = "Name",
@@ -54,15 +57,8 @@ ag_stock_column_defs = [
     AgNumberColumnDef(
         field_name = "h24",
         header_name = "24h%",
-        formatter = AGFormatter(;
-            style = AG_PERCENT,
-            maximum_fraction_digits = 2,
-        ),
-        threshold = AGThreshold(
-            0;
-            color_up = "#22ab94",
-            color_down = "#f23645",
-        ),
+        formatter = AGFormatter(style = AG_PERCENT, maximum_fraction_digits = 2),
+        threshold = AGThreshold(0; color_up = "#22ab94", color_down = "#f23645"),
         filter = true,
     ),
     AgNumberColumnDef(
@@ -73,30 +69,22 @@ ag_stock_column_defs = [
     AgNumberColumnDef(
         field_name = "mkt",
         header_name = "Market Cap",
-        formatter = AGFormatter(;
-            style = AG_CURRENCY,
-            currency = AgTable.USD,
-            separator = true,
-        ),
+        formatter = AGFormatter(style = AG_CURRENCY, currency = AgTables.USD, separator = true),
     ),
     AgStringColumnDef(
         field_name = "sector",
         header_name = "Sector",
         text_align = AG_LEFT,
         filter = true,
-    ),
-]
-
-ag_show(
-    ag_table(
-        ag_stock_sample_data(),
-        ag_stock_column_defs...,
-        column_filter = true,
-    ),
+    );
+    column_filter = true,
+    name = "Stocks",
 )
+
+ag_show(ag_panel(stock_table, order_table))
 ```
 
-![stock_screener_table](assets/stock_screener_table.png)
+![stock_order_panel](assets/stock_order_panel.png)
 
 ## Using AG Grid Enterprise
 
