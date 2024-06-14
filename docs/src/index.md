@@ -36,7 +36,7 @@ julia> ag_show(order_table)
 true
 ```
 
-![order_table](/docs/src/assets/order_table.png)
+![order_table](assets/order_table.png)
 
 To go further, the user can composite panels from tables and configure different parameters for each column of the table:
 
@@ -108,7 +108,7 @@ ag_show(
 )
 ```
 
-![stock_order_panel](/docs/src/assets/stock_order_panel.png)
+![stock_order_panel](assets/stock_order_panel.png)
 
 ## Using AG Grid Enterprise
 
