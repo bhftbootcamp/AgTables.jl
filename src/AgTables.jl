@@ -81,6 +81,10 @@ function Base.show(io::IO, h::AGTable)
     return println(io, "AgTables.AGTable($(h.name))")
 end
 
+function Base.show(io::IO, m::MIME"text/html", h::AGTable)
+    return write(io, string(h))
+end
+
 """
     ag_table(data::Vector{T}, column_defs::AbstractColumnDef...; kw...) -> AGTable
 
@@ -142,6 +146,10 @@ end
 
 function Base.show(io::IO, h::AGPanel)
     return println(io, "AgTables.AGPanel($(h.name))")
+end
+
+function Base.show(io::IO, m::MIME"text/html", h::AGPanel)
+    return write(io, string(h))
 end
 
 """
