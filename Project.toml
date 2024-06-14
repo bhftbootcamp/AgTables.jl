@@ -1,6 +1,6 @@
 name = "AgTables"
 uuid = "de8a86c3-a64b-47c8-8ca2-357579be7910"
-version = "2.1.0"
+version = "2.1.1"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
