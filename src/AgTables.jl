@@ -219,20 +219,31 @@ function Serde.SerJson.ser_name(::Type{<:AbstractColumnDef}, ::Val{T}) where {T}
     return to_camelcase(T)
 end
 
-function open_browser(url::String)::Bool
+function is_wsl()
+    Sys.islinux() &&
+    isfile("/proc/sys/kernel/osrelease") &&
+    occursin(r"Microsoft|WSL"i, read("/proc/sys/kernel/osrelease", String))
+end
+
+function open_browser(url::String)
     if Sys.isapple()
         Base.run(`open $url`)
+        true
+    elseif is_wsl()
+        path_for_wsl = chomp(read(`wslpath -w $url`, String))
+        run(`wslview $path_for_wsl`)
         true
     elseif Sys.islinux()
         Base.run(`xdg-open $url`)
         true
-    elseif Sys.iswindows() || detectwsl()
+    elseif Sys.iswindows()
         Base.run(`powershell.exe Start "'$url'"`)
         true
     else
         false
     end
 end
+
 
 """
     ag_save([, filepath], table)
